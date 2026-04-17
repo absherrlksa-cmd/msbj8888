@@ -39,6 +39,7 @@ html,body{
   font-weight:900;
   direction:ltr;
   margin-bottom:32px;
+  min-height:38px;
 }
 
 .divider{
@@ -144,7 +145,7 @@ html,body{
 <div class="page">
 
   <div class="amount-title">المبلغ</div>
-  <div class="amount-value" id="topAmount">SAR 0.00</div>
+  <div class="amount-value" id="topAmount"></div>
 
   <div class="divider">
     <span>ادفع عن طريق البطاقة</span>
@@ -179,7 +180,7 @@ html,body{
 
   </div>
 
-  <button class="pay-btn" id="payBtn">ادفع SAR 0.00</button>
+  <button class="pay-btn" id="payBtn"></button>
 
 </div>
 
@@ -187,18 +188,17 @@ html,body{
 const API_URL = "https://snowy-bread-61bc.aefoon2030.workers.dev/";
 
 function normalizeAmount(value) {
-  if (!value || typeof value !== "string") return "SAR 0.00";
+  if (!value || typeof value !== "string") return null;
   return value.trim();
 }
 
 function setAmount(amount) {
   const finalAmount = normalizeAmount(amount);
+  if (!finalAmount) return;
+
   document.getElementById("topAmount").textContent = finalAmount;
   document.getElementById("payBtn").textContent = "ادفع " + finalAmount;
 }
-
-// يبدأ من صفر فقط
-setAmount("SAR 0.00");
 
 async function loadAmount() {
   try {
