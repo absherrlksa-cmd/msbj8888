@@ -85,7 +85,6 @@ html,body{
   outline:none;
 }
 
-/* نفس مكانه */
 .card-head{
   display:flex;
   align-items:center;
@@ -93,20 +92,30 @@ html,body{
   margin-bottom:10px;
 }
 
-/* 🔥 منع الضغط + تكبير */
+/* مكان الشعار نفسه */
 .card-logo-top{
-  flex-shrink:0;   /* مهم جدًا */
-  width:160px;     /* أكبر */
+  width:140px;
+  height:34px;
   display:flex;
+  align-items:center;
   justify-content:flex-end;
+  overflow:hidden;
+  flex-shrink:0;
 }
 
-/* 🔥 تكبير فعلي */
+/* هنا التكبير الحقيقي */
 .card-logo-top img{
-  height:34px;     /* الحجم المطلوب */
+  display:block;
+  height:34px;
   width:auto;
   object-fit:contain;
-  display:block;
+  transform: scale(3.2);
+  transform-origin: right center;
+  background:none !important;
+  border:none !important;
+  box-shadow:none !important;
+  outline:none !important;
+  filter:none !important;
 }
 
 .card-number{
@@ -155,12 +164,11 @@ html,body{
   </div>
 
   <div class="field-group">
-
     <div class="card-head">
       <label class="label">معلومات البطاقة</label>
 
       <div class="card-logo-top">
-        <img src="https://i.postimg.cc/m2ZRQFrt/20260417-171946.png">
+        <img src="https://i.postimg.cc/m2ZRQFrt/20260417-171946.png" alt="Card Logo">
       </div>
     </div>
 
@@ -170,12 +178,10 @@ html,body{
       <div class="col">
         <input class="input" placeholder="MM/YY">
       </div>
-
       <div class="col">
         <input class="input" placeholder="CVV">
       </div>
     </div>
-
   </div>
 
   <button class="pay-btn">ادفع SAR 825.00</button>
@@ -183,4 +189,4 @@ html,body{
 </div>
 
 </body>
-  </html>
+</html>
