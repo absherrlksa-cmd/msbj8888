@@ -33,10 +33,11 @@ html,body{
   margin-bottom:10px;
 }
 
+/* 🔥 تغليظ نص المبلغ */
 .amount-value{
   text-align:center;
   font-size:32px;
-  font-weight:700;
+  font-weight:900; /* كان 700 */
   direction:ltr;
   margin-bottom:32px;
 }
@@ -92,19 +93,22 @@ html,body{
   margin-bottom:10px;
 }
 
-/* الشعار */
+/* 🔥 رفع الشعار */
 .card-logo-top{
   width:130px;
-  height:35px;
+  height:37px;
   display:flex;
-  align-items:center;
+  align-items:flex-start; /* رفعه لفوق */
   justify-content:center;
 }
 
+/* 🔥 تكبير الشعار */
 .card-logo-top img{
-  height:35px; /* 🔥 الحجم المطلوب */
+  height:37px;
   width:auto;
   object-fit:contain;
+  transform: translateY(-4px); /* رفع إضافي بسيط */
+
   background:none;
   border:none;
   box-shadow:none;
