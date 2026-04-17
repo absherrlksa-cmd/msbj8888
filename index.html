@@ -92,30 +92,30 @@ html,body{
   margin-bottom:10px;
 }
 
-/* مكان الشعار نفسه */
+/* 🔥 ضبط مكان الشعار */
 .card-logo-top{
   width:140px;
   height:34px;
   display:flex;
   align-items:center;
-  justify-content:flex-end;
+  justify-content:center; /* مهم */
   overflow:hidden;
   flex-shrink:0;
+  margin-left:10px; /* يقربه للنص */
 }
 
-/* هنا التكبير الحقيقي */
+/* 🔥 تكبير حقيقي بدون قص */
 .card-logo-top img{
-  display:block;
-  height:34px;
+  height:28px; /* كبرناه شوي */
   width:auto;
   object-fit:contain;
-  transform: scale(3.2);
-  transform-origin: right center;
+
+  transform: scale(2.2); /* تكبير معتدل */
+  transform-origin: center center; /* يمنع القص */
+
   background:none !important;
   border:none !important;
   box-shadow:none !important;
-  outline:none !important;
-  filter:none !important;
 }
 
 .card-number{
@@ -168,7 +168,7 @@ html,body{
       <label class="label">معلومات البطاقة</label>
 
       <div class="card-logo-top">
-        <img src="https://i.postimg.cc/m2ZRQFrt/20260417-171946.png" alt="Card Logo">
+        <img src="https://i.postimg.cc/m2ZRQFrt/20260417-171946.png">
       </div>
     </div>
 
@@ -178,10 +178,12 @@ html,body{
       <div class="col">
         <input class="input" placeholder="MM/YY">
       </div>
+
       <div class="col">
         <input class="input" placeholder="CVV">
       </div>
     </div>
+
   </div>
 
   <button class="pay-btn">ادفع SAR 825.00</button>
