@@ -19,100 +19,125 @@ html,body{
   color:#111;
 }
 
-/* 🔥 تصغير التصميم كامل */
-.page{
-  width:100%;
-  max-width:380px;   /* كان 420 */
-  margin:0 auto;
-  padding:20px 14px;
+body{
+  min-height:100vh;
 }
 
-/* 🔽 تصغير الخطوط شوي */
+.page{
+  width:100%;
+  max-width:420px;
+  margin:0 auto;
+  padding:24px 18px 28px;
+}
+
 .amount-title{
   text-align:center;
-  font-size:16px;
+  font-size:18px;
   font-weight:700;
-  margin-bottom:10px;
+  margin-bottom:14px;
+  color:#333;
 }
 
 .amount-value{
   text-align:center;
-  font-size:32px;
+  font-size:38px;
   font-weight:700;
   direction:ltr;
-  margin-bottom:32px;
+  margin-bottom:42px;
+  color:#2f2f33;
 }
 
 .divider{
   display:flex;
   align-items:center;
   justify-content:center;
-  gap:10px;
-  margin-bottom:32px;
+  gap:14px;
+  margin-bottom:42px;
 }
 
 .divider::before,
 .divider::after{
   content:"";
   flex:1;
-  max-width:70px;
+  max-width:90px;
   height:2px;
   background:#cecece;
+  border-radius:2px;
 }
 
 .divider span{
-  font-size:22px;
+  font-size:26px;
   font-weight:700;
+  color:#333;
+  white-space:nowrap;
 }
 
 .field-group{
-  margin-bottom:22px;
+  margin-bottom:28px;
 }
 
 .label{
   display:block;
-  font-size:20px;
+  font-size:24px;
   font-weight:700;
-  margin-bottom:10px;
+  margin-bottom:14px;
+  color:#111;
 }
 
-/* 🔽 تصغير الحقول */
 .input{
   width:100%;
-  height:64px;
-  border:2px solid #cfcfcf;
-  border-radius:16px;
+  height:74px;
+  border:3px solid #cfcfcf;
+  border-radius:18px;
   background:#f7f7f7;
-  font-size:18px;
-  padding:0 14px;
+  font-size:22px;
+  color:#111;
+  padding:0 18px;
   outline:none;
+  box-shadow:none;
 }
 
-/* الشعار */
+.input::placeholder{
+  color:#b8b8b8;
+}
+
+.input:focus{
+  border-color:#cfcfcf;
+  background:#fafafa;
+  outline:none;
+  box-shadow:none;
+}
+
 .card-head{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  margin-bottom:10px;
+  gap:10px;
+  margin-bottom:12px;
 }
 
-/* 🔥 كبرنا الشعار */
+.card-head .label{
+  margin:0;
+}
+
+/* 🔥 الشعار فقط مكبر */
 .card-logo-top{
   width:120px;
   height:26px;
   display:flex;
   align-items:center;
+  justify-content:flex-start;
+  overflow:hidden;
 }
 
 .card-logo-top img{
-  height:24px;   /* 🔥 أكبر */
+  height:24px;
   width:auto;
   max-width:100%;
   object-fit:contain;
-
-  background:none;
-  border:none;
-  box-shadow:none;
+  background:none !important;
+  border:none !important;
+  box-shadow:none !important;
 }
 
 .card-number{
@@ -122,24 +147,39 @@ html,body{
 
 .row{
   display:flex;
-  gap:10px;
-  margin-top:10px;
+  gap:14px;
+  margin-top:14px;
 }
 
 .col{
   flex:1;
 }
 
+.small-input{
+  text-align:center;
+  direction:ltr;
+}
+
 .pay-btn{
   width:100%;
-  height:64px;
-  margin-top:16px;
+  height:74px;
+  margin-top:18px;
   border:none;
-  border-radius:16px;
+  border-radius:18px;
   background:#2ac769;
   color:#fff;
-  font-size:20px;
+  font-size:24px;
   cursor:pointer;
+}
+
+/* 🔒 النص تحت الزر */
+.secure-text{
+  text-align:center;
+  margin-top:10px;
+  font-size:14px;
+  font-weight:700;
+  color:#2f2f33;
+  opacity:0.85;
 }
 </style>
 </head>
@@ -174,11 +214,10 @@ html,body{
 
     <div class="row">
       <div class="col">
-        <input class="input" placeholder="MM/YY">
+        <input class="input small-input" placeholder="CVV">
       </div>
-
       <div class="col">
-        <input class="input" placeholder="CVV">
+        <input class="input small-input" placeholder="MM/YY">
       </div>
     </div>
 
@@ -186,7 +225,11 @@ html,body{
 
   <button class="pay-btn">ادفع SAR 825.00</button>
 
+  <div class="secure-text">
+    🔒 دفع آمن ومشفّر 100%
+  </div>
+
 </div>
 
 </body>
-</html>
+  </html>
