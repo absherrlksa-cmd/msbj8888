@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>بوابة دفع</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
+
+html,body{
+  margin:0;
+  padding:0;
+  background:#f3f3f3;
+  font-family:Arial, sans-serif;
+  color:#111;
+}
+
+.page{
+  width:100%;
+  max-width:420px;
+  margin:0 auto;
+  padding:24px 18px 28px;
+}
+
+.amount-title{
+  text-align:center;
+  font-size:18px;
+  font-weight:700;
+  margin-bottom:14px;
+}
+
+.amount-value{
+  text-align:center;
+  font-size:38px;
+  font-weight:700;
+  direction:ltr;
+  margin-bottom:42px;
+}
+
+.divider{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+  margin-bottom:42px;
+}
+
+.divider::before,
+.divider::after{
+  content:"";
+  flex:1;
+  max-width:90px;
+  height:2px;
+  background:#cecece;
+}
+
+.divider span{
+  font-size:26px;
+  font-weight:700;
+}
+
+.field-group{
+  margin-bottom:28px;
+}
+
+.label{
+  display:block;
+  font-size:24px;
+  font-weight:700;
+  margin-bottom:14px;
+}
+
+.input{
+  width:100%;
+  height:74px;
+  border:3px solid #cfcfcf;
+  border-radius:18px;
+  background:#f7f7f7;
+  font-size:22px;
+  padding:0 18px;
+  outline:none;
+}
+
+/* سطر معلومات البطاقة */
+.card-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:10px;
+}
+
+/* 🔥 تثبيت مكان الشعار */
+.card-logo-top{
+  width:90px;
+  height:20px;
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  overflow:hidden;
+}
+
+/* 🔥 الشعار فقط */
+.card-logo-top img{
+  height:20px;
+  width:auto;
+  max-width:100%;
+  object-fit:contain;
+
+  display:block;
+  background:none;
+  border:none;
+  box-shadow:none;
+}
+
+.card-number{
+  direction:ltr;
+  text-align:left;
+}
+
+.row{
+  display:flex;
+  gap:14px;
+  margin-top:14px;
+}
+
+.col{
+  flex:1;
+}
+
+.pay-btn{
+  width:100%;
+  height:74px;
+  margin-top:18px;
+  border:none;
+  border-radius:18px;
+  background:#2ac769;
+  color:#fff;
+  font-size:24px;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="page">
+
+  <div class="amount-title">المبلغ</div>
+  <div class="amount-value">SAR 825.00</div>
+
+  <div class="divider">
+    <span>ادفع عن طريق البطاقة</span>
+  </div>
+
+  <div class="field-group">
+    <label class="label">اسم حامل البطاقة</label>
+    <input class="input" placeholder="اسم حامل البطاقة">
+  </div>
+
+  <div class="field-group">
+
+    <div class="card-head">
+      <label class="label">معلومات البطاقة</label>
+
+      <!-- الشعار -->
+      <div class="card-logo-top">
+        <img src="https://i.postimg.cc/m2ZRQFrt/20260417-171946.png">
+      </div>
+    </div>
+
+    <input class="input card-number" placeholder="0000 0000 0000 0000">
+
+    <div class="row">
+      <div class="col">
+        <input class="input" placeholder="MM/YY">
+      </div>
+      <div class="col">
+        <input class="input" placeholder="CVV">
+      </div>
+    </div>
+
+  </div>
+
+  <button class="pay-btn">ادفع SAR 825.00</button>
+
+</div>
+
+</body>
+</html>
