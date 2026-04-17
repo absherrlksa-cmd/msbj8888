@@ -85,27 +85,28 @@ html,body{
   outline:none;
 }
 
-/* 🔥 تعديل مهم هنا */
+/* نفس مكانه */
 .card-head{
   display:flex;
-  flex-direction:column;   /* بدل row */
-  align-items:flex-start;
-  gap:6px;
+  align-items:center;
+  justify-content:space-between;
   margin-bottom:10px;
 }
 
-/* 🔥 الشعار صار تحت النص وكبير */
+/* 🔥 منع الضغط + تكبير */
 .card-logo-top{
-  width:100%;
+  flex-shrink:0;   /* مهم جدًا */
+  width:160px;     /* أكبر */
   display:flex;
-  justify-content:flex-start;
+  justify-content:flex-end;
 }
 
-/* 🔥 تكبير حقيقي */
+/* 🔥 تكبير فعلي */
 .card-logo-top img{
-  height:36px;   /* هذا الحجم المطلوب */
+  height:34px;     /* الحجم المطلوب */
   width:auto;
   object-fit:contain;
+  display:block;
 }
 
 .card-number{
@@ -182,4 +183,4 @@ html,body{
 </div>
 
 </body>
-</html>
+  </html>
