@@ -92,30 +92,21 @@ html,body{
   margin-bottom:10px;
 }
 
-/* 🔥 ضبط مكان الشعار */
 .card-logo-top{
-  width:140px;
-  height:34px;
+  width:120px;
+  height:26px;
   display:flex;
   align-items:center;
-  justify-content:center; /* مهم */
-  overflow:hidden;
-  flex-shrink:0;
-  margin-left:10px; /* يقربه للنص */
 }
 
-/* 🔥 تكبير حقيقي بدون قص */
 .card-logo-top img{
-  height:28px; /* كبرناه شوي */
+  height:44px; /* 🔥 تكبير +20px */
   width:auto;
+  max-width:100%;
   object-fit:contain;
-
-  transform: scale(2.2); /* تكبير معتدل */
-  transform-origin: center center; /* يمنع القص */
-
-  background:none !important;
-  border:none !important;
-  box-shadow:none !important;
+  background:none;
+  border:none;
+  box-shadow:none;
 }
 
 .card-number{
@@ -164,6 +155,7 @@ html,body{
   </div>
 
   <div class="field-group">
+
     <div class="card-head">
       <label class="label">معلومات البطاقة</label>
 
