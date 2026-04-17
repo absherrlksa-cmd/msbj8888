@@ -85,30 +85,27 @@ html,body{
   outline:none;
 }
 
-/* الشعار */
+/* 🔥 تعديل مهم هنا */
 .card-head{
   display:flex;
-  align-items:center;
-  justify-content:space-between;
+  flex-direction:column;   /* بدل row */
+  align-items:flex-start;
+  gap:6px;
   margin-bottom:10px;
 }
 
-/* 🔥 تكبير فعلي */
+/* 🔥 الشعار صار تحت النص وكبير */
 .card-logo-top{
-  width:150px;
-  height:34px;
+  width:100%;
   display:flex;
-  align-items:center;
+  justify-content:flex-start;
 }
 
+/* 🔥 تكبير حقيقي */
 .card-logo-top img{
-  height:32px;
+  height:36px;   /* هذا الحجم المطلوب */
   width:auto;
-  max-width:100%;
   object-fit:contain;
-  background:none;
-  border:none;
-  box-shadow:none;
 }
 
 .card-number{
