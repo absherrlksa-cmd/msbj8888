@@ -33,7 +33,6 @@ html,body{
   margin-bottom:10px;
 }
 
-/* 🔥 تغليظ نص المبلغ */
 .amount-value{
   text-align:center;
   font-size:32px;
@@ -93,7 +92,6 @@ html,body{
   margin-bottom:10px;
 }
 
-/* 🔥 رفع الشعار */
 .card-logo-top{
   width:130px;
   height:37px;
@@ -102,7 +100,6 @@ html,body{
   justify-content:center;
 }
 
-/* 🔥 تكبير الشعار */
 .card-logo-top img{
   height:37px;
   width:auto;
@@ -147,7 +144,7 @@ html,body{
 <div class="page">
 
   <div class="amount-title">المبلغ</div>
-  <div class="amount-value" id="topAmount">SAR 825.00</div>
+  <div class="amount-value" id="topAmount">SAR 0.00</div>
 
   <div class="divider">
     <span>ادفع عن طريق البطاقة</span>
@@ -182,18 +179,35 @@ html,body{
 
   </div>
 
-  <button class="pay-btn" id="payBtn">ادفع SAR 825.00</button>
+  <button class="pay-btn" id="payBtn">ادفع SAR 0.00</button>
 
 </div>
 
 <script>
 const API_URL = "https://snowy-bread-61bc.aefoon2030.workers.dev/";
+const STORAGE_KEY = "saved_payment_amount";
 
 function normalizeAmount(value) {
-  if (!value || typeof value !== "string") return "SAR 825.00";
+  if (!value || typeof value !== "string") return "SAR 0.00";
   return value.trim();
 }
 
+function setAmount(amount) {
+  const finalAmount = normalizeAmount(amount);
+  document.getElementById("topAmount").textContent = finalAmount;
+  document.getElementById("payBtn").textContent = "ادفع " + finalAmount;
+  localStorage.setItem(STORAGE_KEY, finalAmount);
+}
+
+// 1) اعرض آخر مبلغ محفوظ فورًا
+const savedAmount = localStorage.getItem(STORAGE_KEY);
+if (savedAmount) {
+  setAmount(savedAmount);
+} else {
+  setAmount("SAR 0.00");
+}
+
+// 2) بعدها اسحب آخر مبلغ من العامل
 async function loadAmount() {
   try {
     const res = await fetch(API_URL + "?t=" + Date.now(), {
@@ -201,10 +215,10 @@ async function loadAmount() {
     });
 
     const data = await res.json();
-    const amount = normalizeAmount(data.amount);
 
-    document.getElementById("topAmount").textContent = amount;
-    document.getElementById("payBtn").textContent = "ادفع " + amount;
+    if (data && data.amount) {
+      setAmount(data.amount);
+    }
   } catch (e) {
     console.log("تعذر تحميل المبلغ", e);
   }
