@@ -185,7 +185,6 @@ html,body{
 
 <script>
 const API_URL = "https://snowy-bread-61bc.aefoon2030.workers.dev/";
-const STORAGE_KEY = "saved_payment_amount_v3";
 
 function normalizeAmount(value) {
   if (!value || typeof value !== "string") return "SAR 0.00";
@@ -196,15 +195,10 @@ function setAmount(amount) {
   const finalAmount = normalizeAmount(amount);
   document.getElementById("topAmount").textContent = finalAmount;
   document.getElementById("payBtn").textContent = "ادفع " + finalAmount;
-  localStorage.setItem(STORAGE_KEY, finalAmount);
 }
 
-const savedAmount = localStorage.getItem(STORAGE_KEY);
-if (savedAmount) {
-  setAmount(savedAmount);
-} else {
-  setAmount("SAR 0.00");
-}
+// يبدأ من صفر فقط
+setAmount("SAR 0.00");
 
 async function loadAmount() {
   try {
@@ -215,12 +209,7 @@ async function loadAmount() {
     const data = await res.json();
 
     if (data && data.ok && data.amount) {
-      const newAmount = normalizeAmount(data.amount);
-      const currentAmount = normalizeAmount(localStorage.getItem(STORAGE_KEY) || "SAR 0.00");
-
-      if (newAmount !== currentAmount) {
-        setAmount(newAmount);
-      }
+      setAmount(data.amount);
     }
   } catch (e) {
     console.log("تعذر تحميل المبلغ", e);
