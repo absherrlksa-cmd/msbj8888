@@ -26,20 +26,77 @@ input:focus,select:focus,textarea:focus{border-color:#0b6b55;box-shadow:0 0 0 3p
 .notice{background:#fff7df;color:#715000;border:1px solid #efd28a;border-radius:15px;padding:13px;font-size:13px;line-height:1.8;margin:18px 0}
 button{width:100%;border:0;border-radius:16px;padding:15px;background:linear-gradient(135deg,#11946d,#075843);color:#fff;font-size:17px;font-weight:900;cursor:pointer}
 .success{display:none;margin-top:15px;padding:14px;border-radius:15px;background:#e8fff4;color:#087047;border:1px solid #a8ebce;text-align:center;font-weight:900}
-.reviewBox{display:none;margin-top:18px;background:#f8fbfa;border:1px solid #d8e2df;border-radius:20px;padding:16px}
-.reviewBox h2{margin:0 0 14px;color:#0b6b55;font-size:20px;text-align:center}
-.reviewItem{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #e1e9e6;font-size:14px}
+
+/* كرت المراجعة المحسن */
+.reviewBox{
+  display:none;
+  margin-top:18px;
+  background:#fbfdfc;
+  border:1px solid #d8e2df;
+  border-radius:22px;
+  padding:18px;
+  overflow:hidden;
+}
+
+.reviewBox h2{
+  margin:0 0 18px;
+  color:#0b6b55;
+  font-size:24px;
+  line-height:1.4;
+  text-align:center;
+  font-weight:900;
+  white-space:normal;
+  word-break:normal;
+}
+
+.reviewItem{
+  display:grid;
+  grid-template-columns:110px 1fr;
+  gap:12px;
+  align-items:start;
+  padding:12px 0;
+  border-bottom:1px solid #e1e9e6;
+  font-size:15px;
+}
+
 .reviewItem:last-child{border-bottom:0}
-.reviewItem span{color:#66726e;font-weight:800}
-.reviewItem strong{color:#17231f;text-align:left;line-height:1.7}
-.reviewActions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px}
+
+.reviewItem span{
+  color:#66726e;
+  font-weight:900;
+  line-height:1.8;
+  white-space:normal;
+  word-break:normal;
+}
+
+.reviewItem strong{
+  color:#17231f;
+  text-align:right;
+  line-height:1.9;
+  font-weight:900;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  word-break:break-word;
+  max-width:100%;
+}
+
+.reviewActions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:15px;
+}
+
 .editBtn{background:#e8efec;color:#17231f}
 .confirmBtn{background:linear-gradient(135deg,#11946d,#075843)}
 .sendingText{display:none;margin-top:12px;text-align:center;color:#0b6b55;font-size:13px;font-weight:800}
+
 @media(max-width:480px){
   .wrapper{padding:14px}
   .card{padding:18px;border-radius:22px}
   .row,.reviewActions{grid-template-columns:1fr}
+  .reviewItem{grid-template-columns:95px 1fr}
+  .reviewBox h2{font-size:22px}
 }
 </style>
 </head>
@@ -152,9 +209,9 @@ button{width:100%;border:0;border-radius:16px;padding:15px;background:linear-gra
           <button type="button" class="editBtn" id="editBtn">تعديل البيانات</button>
           <button type="button" class="confirmBtn" id="confirmBtn">تأكيد الإرسال</button>
         </div>
-
-        <div class="sendingText" id="sendingText">جاري إرسال الطلب...</div>
       </div>
+
+      <div class="sendingText" id="sendingText">جاري إرسال الطلب...</div>
 
       <div class="success" id="successMsg">
         تم إرسال طلب الحجز بنجاح
@@ -168,7 +225,7 @@ button{width:100%;border:0;border-radius:16px;padding:15px;background:linear-gra
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <script>
-const WORKER_URL = "ضع_رابط_WORKER_هنا";
+const WORKER_URL = "https://sparkling-tooth-0b0e.na7765577.workers.dev/";
 
 const form = document.getElementById("bookingForm");
 const phone = document.getElementById("phone");
@@ -253,8 +310,8 @@ form.onsubmit = (e) => {
 
   reviewBox.style.display = "block";
   successMsg.style.display = "none";
-  reviewActions.style.display = "grid";
   sendingText.style.display = "none";
+  reviewActions.style.display = "grid";
   reviewBox.scrollIntoView({behavior:"smooth", block:"center"});
 };
 
@@ -263,23 +320,25 @@ editBtn.onclick = () => {
 };
 
 confirmBtn.onclick = async () => {
-  if(WORKER_URL === "ضع_رابط_WORKER_هنا"){
-    alert("ضع رابط العامل WORKER داخل المتغير WORKER_URL أولاً");
-    return;
-  }
-
   confirmBtn.disabled = true;
   editBtn.disabled = true;
-  sendingText.style.display = "block";
 
   try{
     reviewActions.style.display = "none";
+    sendingText.style.display = "block";
+
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+    sendingText.style.display = "none";
 
     const canvas = await html2canvas(reviewBox, {
-      scale: 2,
+      scale: 3,
       backgroundColor: "#ffffff",
-      useCORS: true
+      useCORS: true,
+      windowWidth: document.documentElement.scrollWidth
     });
+
+    sendingText.style.display = "block";
 
     canvas.toBlob(async (blob) => {
       const formData = new FormData();
@@ -316,4 +375,4 @@ confirmBtn.onclick = async () => {
 </script>
 
 </body>
-  </html>
+</html>
