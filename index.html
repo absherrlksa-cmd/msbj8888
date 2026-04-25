@@ -25,51 +25,112 @@ input:focus,select:focus,textarea:focus{border-color:#0b6b55;box-shadow:0 0 0 3p
 .serviceItem input{width:auto}
 .notice{background:#fff7df;color:#715000;border:1px solid #efd28a;border-radius:15px;padding:13px;font-size:13px;line-height:1.8;margin:18px 0}
 button{width:100%;border:0;border-radius:16px;padding:15px;background:linear-gradient(135deg,#11946d,#075843);color:#fff;font-size:17px;font-weight:900;cursor:pointer}
+button:disabled{opacity:.65;cursor:not-allowed}
 .success{display:none;margin-top:15px;padding:14px;border-radius:15px;background:#e8fff4;color:#087047;border:1px solid #a8ebce;text-align:center;font-weight:900}
 
-/* كرت المراجعة المحسن */
+/* كرت المراجعة الظاهر */
 .reviewBox{
   display:none;
-  margin-top:18px;
-  background:#fbfdfc;
-  border:1px solid #d8e2df;
+  margin-top:20px;
+  background:#fff;
   border-radius:22px;
-  padding:18px;
   overflow:hidden;
+  border:1px solid #d9e7e2;
+  box-shadow:0 18px 42px rgba(7,88,67,.17);
 }
 
-.reviewBox h2{
-  margin:0 0 18px;
-  color:#0b6b55;
-  font-size:24px;
-  line-height:1.4;
-  text-align:center;
-  font-weight:900;
-  white-space:normal;
-  word-break:normal;
+.invoiceTop{
+  padding:20px 18px 16px;
+  background:#fbfdfc;
+  border-bottom:3px solid #0b6b55;
 }
 
-.reviewItem{
-  display:grid;
-  grid-template-columns:110px 1fr;
+.invoiceHead{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
   gap:12px;
-  align-items:start;
-  padding:12px 0;
-  border-bottom:1px solid #e1e9e6;
+}
+
+.invoiceTitle h2{
+  margin:0;
+  color:#0b6b55;
+  font-size:26px;
+  font-weight:900;
+  line-height:1.3;
+}
+
+.invoiceTitle p{
+  margin:6px 0 0;
+  color:#66726e;
+  font-size:13px;
+  font-weight:800;
+}
+
+.invoiceBadge{
+  background:#fff3d6;
+  color:#8a5a00;
+  border:1px solid #f0cf83;
+  padding:7px 12px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:900;
+  white-space:nowrap;
+}
+
+.invoiceMeta{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:16px;
+}
+
+.invoiceMetaBox{
+  background:#0b6b55;
+  color:#fff;
+  border-radius:15px;
+  padding:11px 12px;
+}
+
+.invoiceMetaBox span{
+  display:block;
+  font-size:12px;
+  opacity:.85;
+  margin-bottom:5px;
+  font-weight:700;
+}
+
+.invoiceMetaBox strong{
+  display:block;
+  font-size:14px;
+  font-weight:900;
+  direction:ltr;
+  text-align:right;
+}
+
+.invoiceContent{
+  padding:16px 18px 8px;
+  background:#fff;
+}
+
+.invoiceRow{
+  display:grid;
+  grid-template-columns:125px 1fr;
+  gap:10px;
+  padding:13px 0;
+  border-bottom:1px dashed #d8e2df;
   font-size:15px;
 }
 
-.reviewItem:last-child{border-bottom:0}
+.invoiceRow:last-child{border-bottom:0}
 
-.reviewItem span{
+.invoiceRow span{
   color:#66726e;
   font-weight:900;
   line-height:1.8;
-  white-space:normal;
-  word-break:normal;
 }
 
-.reviewItem strong{
+.invoiceRow strong{
   color:#17231f;
   text-align:right;
   line-height:1.9;
@@ -77,26 +138,176 @@ button{width:100%;border:0;border-radius:16px;padding:15px;background:linear-gra
   white-space:pre-wrap;
   overflow-wrap:anywhere;
   word-break:break-word;
-  max-width:100%;
+}
+
+.invoiceFooterNote{
+  margin:8px 18px 18px;
+  padding:13px;
+  background:#fff7df;
+  border:1px solid #efd28a;
+  color:#715000;
+  border-radius:15px;
+  font-size:13px;
+  line-height:1.8;
+  font-weight:800;
 }
 
 .reviewActions{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:10px;
-  margin-top:15px;
+  padding:0 18px 18px;
+  background:#fff;
 }
 
-.editBtn{background:#e8efec;color:#17231f}
+.editBtn{background:#eef4f1;color:#17231f}
 .confirmBtn{background:linear-gradient(135deg,#11946d,#075843)}
 .sendingText{display:none;margin-top:12px;text-align:center;color:#0b6b55;font-size:13px;font-weight:800}
+
+/* فاتورة مربعة مخفية للإرسال فقط */
+.captureInvoice{
+  position:fixed;
+  right:-99999px;
+  top:0;
+  width:900px;
+  height:900px;
+  background:#ffffff;
+  color:#17231f;
+  padding:38px;
+  font-family:Arial,Tahoma,sans-serif;
+  overflow:hidden;
+}
+
+.captureBox{
+  width:100%;
+  height:100%;
+  background:#fff;
+  border:2px solid #0b6b55;
+  border-radius:30px;
+  overflow:hidden;
+}
+
+.captureHeader{
+  background:linear-gradient(135deg,#0b6b55,#11946d);
+  color:#fff;
+  padding:34px;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:20px;
+}
+
+.captureHeader h2{
+  margin:0;
+  font-size:42px;
+  font-weight:900;
+  line-height:1.3;
+}
+
+.captureHeader p{
+  margin:8px 0 0;
+  font-size:21px;
+  font-weight:700;
+  opacity:.92;
+}
+
+.captureBadge{
+  background:#fff3d6;
+  color:#8a5a00;
+  border:1px solid #f0cf83;
+  padding:12px 22px;
+  border-radius:999px;
+  font-size:18px;
+  font-weight:900;
+  white-space:nowrap;
+}
+
+.captureMeta{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+  padding:24px 34px;
+  background:#f8fbfa;
+  border-bottom:1px solid #d8e2df;
+}
+
+.captureMeta div{
+  border:1px solid #d8e2df;
+  border-radius:18px;
+  padding:16px;
+  background:#fff;
+}
+
+.captureMeta span{
+  display:block;
+  color:#66726e;
+  font-size:18px;
+  font-weight:900;
+  margin-bottom:8px;
+}
+
+.captureMeta strong{
+  display:block;
+  color:#17231f;
+  font-size:22px;
+  font-weight:900;
+  direction:ltr;
+  text-align:right;
+}
+
+.captureContent{
+  padding:24px 34px 10px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px 26px;
+}
+
+.captureRow{
+  border-bottom:1px dashed #d8e2df;
+  padding:10px 0;
+}
+
+.captureRow.full{
+  grid-column:1 / -1;
+}
+
+.captureRow span{
+  display:block;
+  color:#66726e;
+  font-size:17px;
+  font-weight:900;
+  margin-bottom:5px;
+}
+
+.captureRow strong{
+  display:block;
+  color:#17231f;
+  font-size:21px;
+  line-height:1.55;
+  font-weight:900;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  word-break:break-word;
+}
+
+.captureNote{
+  margin:10px 34px 0;
+  padding:16px;
+  background:#fff7df;
+  border:1px solid #efd28a;
+  color:#715000;
+  border-radius:18px;
+  font-size:18px;
+  line-height:1.7;
+  font-weight:900;
+}
 
 @media(max-width:480px){
   .wrapper{padding:14px}
   .card{padding:18px;border-radius:22px}
-  .row,.reviewActions{grid-template-columns:1fr}
-  .reviewItem{grid-template-columns:95px 1fr}
-  .reviewBox h2{font-size:22px}
+  .row,.reviewActions,.invoiceMeta{grid-template-columns:1fr}
+  .invoiceRow{grid-template-columns:105px 1fr;font-size:14px}
+  .invoiceTitle h2{font-size:24px}
 }
 </style>
 </head>
@@ -194,16 +405,42 @@ button{width:100%;border:0;border-radius:16px;padding:15px;background:linear-gra
       <button type="submit">إرسال طلب الحجز</button>
 
       <div class="reviewBox" id="reviewBox">
-        <h2>مراجعة بيانات الحجز</h2>
 
-        <div class="reviewItem"><span>الاسم</span><strong id="rName"></strong></div>
-        <div class="reviewItem"><span>رقم الجوال</span><strong id="rPhone"></strong></div>
-        <div class="reviewItem"><span>الدخول</span><strong id="rCheckin"></strong></div>
-        <div class="reviewItem"><span>الخروج</span><strong id="rCheckout"></strong></div>
-        <div class="reviewItem"><span>عدد الأشخاص</span><strong id="rPeople"></strong></div>
-        <div class="reviewItem"><span>نوع القسم</span><strong id="rSection"></strong></div>
-        <div class="reviewItem"><span>الخدمات</span><strong id="rServices"></strong></div>
-        <div class="reviewItem"><span>الملاحظات</span><strong id="rNotes"></strong></div>
+        <div class="invoiceTop">
+          <div class="invoiceHead">
+            <div class="invoiceTitle">
+              <h2>فاتورة حجز</h2>
+              <p>طلب حجز شاليه</p>
+            </div>
+            <div class="invoiceBadge">بانتظار التأكيد</div>
+          </div>
+
+          <div class="invoiceMeta">
+            <div class="invoiceMetaBox">
+              <span>رقم الطلب</span>
+              <strong id="invoiceNo"></strong>
+            </div>
+            <div class="invoiceMetaBox">
+              <span>تاريخ الطلب</span>
+              <strong id="invoiceDate"></strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="invoiceContent">
+          <div class="invoiceRow"><span>اسم العميل</span><strong id="rName"></strong></div>
+          <div class="invoiceRow"><span>رقم الجوال</span><strong id="rPhone"></strong></div>
+          <div class="invoiceRow"><span>الدخول</span><strong id="rCheckin"></strong></div>
+          <div class="invoiceRow"><span>الخروج</span><strong id="rCheckout"></strong></div>
+          <div class="invoiceRow"><span>عدد الأشخاص</span><strong id="rPeople"></strong></div>
+          <div class="invoiceRow"><span>نوع القسم</span><strong id="rSection"></strong></div>
+          <div class="invoiceRow"><span>الخدمات</span><strong id="rServices"></strong></div>
+          <div class="invoiceRow"><span>الملاحظات</span><strong id="rNotes"></strong></div>
+        </div>
+
+        <div class="invoiceFooterNote">
+          لا يتم تأكيد الحجز إلا بعد التواصل مع العميل ودفع قيمة الحجز أو العربون المطلوب.
+        </div>
 
         <div class="reviewActions" id="reviewActions">
           <button type="button" class="editBtn" id="editBtn">تعديل البيانات</button>
@@ -218,6 +455,47 @@ button{width:100%;border:0;border-radius:16px;padding:15px;background:linear-gra
       </div>
 
     </form>
+
+  </div>
+</div>
+
+<!-- الفاتورة المربعة المخفية التي يتم إرسالها لتلجرام -->
+<div class="captureInvoice" id="captureInvoice">
+  <div class="captureBox">
+
+    <div class="captureHeader">
+      <div>
+        <h2>فاتورة حجز</h2>
+        <p>طلب حجز شاليه</p>
+      </div>
+      <div class="captureBadge">بانتظار التأكيد</div>
+    </div>
+
+    <div class="captureMeta">
+      <div>
+        <span>رقم الطلب</span>
+        <strong id="cInvoiceNo"></strong>
+      </div>
+      <div>
+        <span>تاريخ الطلب</span>
+        <strong id="cInvoiceDate"></strong>
+      </div>
+    </div>
+
+    <div class="captureContent">
+      <div class="captureRow"><span>اسم العميل</span><strong id="cName"></strong></div>
+      <div class="captureRow"><span>رقم الجوال</span><strong id="cPhone"></strong></div>
+      <div class="captureRow"><span>الدخول</span><strong id="cCheckin"></strong></div>
+      <div class="captureRow"><span>الخروج</span><strong id="cCheckout"></strong></div>
+      <div class="captureRow"><span>عدد الأشخاص</span><strong id="cPeople"></strong></div>
+      <div class="captureRow"><span>نوع القسم</span><strong id="cSection"></strong></div>
+      <div class="captureRow full"><span>الخدمات الإضافية</span><strong id="cServices"></strong></div>
+      <div class="captureRow full"><span>الملاحظات</span><strong id="cNotes"></strong></div>
+    </div>
+
+    <div class="captureNote">
+      لا يتم تأكيد الحجز إلا بعد التواصل مع العميل ودفع قيمة الحجز أو العربون المطلوب.
+    </div>
 
   </div>
 </div>
@@ -245,10 +523,17 @@ const editBtn = document.getElementById("editBtn");
 const confirmBtn = document.getElementById("confirmBtn");
 const reviewActions = document.getElementById("reviewActions");
 const sendingText = document.getElementById("sendingText");
+const captureInvoice = document.getElementById("captureInvoice");
 
 serviceBtn.onclick = () => {
   serviceList.classList.toggle("show");
 };
+
+document.addEventListener("click", function(e){
+  if(!e.target.closest(".serviceDropdown")){
+    serviceList.classList.remove("show");
+  }
+});
 
 serviceChecks.forEach(item=>{
   item.addEventListener("change",()=>{
@@ -282,6 +567,33 @@ function formatDateTime(value){
   });
 }
 
+function dataURLToBlob(dataURL){
+  const parts = dataURL.split(",");
+  const mime = parts[0].match(/:(.*?);/)[1];
+  const binary = atob(parts[1]);
+  let len = binary.length;
+  const u8 = new Uint8Array(len);
+
+  while(len--){
+    u8[len] = binary.charCodeAt(len);
+  }
+
+  return new Blob([u8], {type:mime});
+}
+
+function fillCaptureInvoice(){
+  document.getElementById("cInvoiceNo").textContent = document.getElementById("invoiceNo").textContent;
+  document.getElementById("cInvoiceDate").textContent = document.getElementById("invoiceDate").textContent;
+  document.getElementById("cName").textContent = document.getElementById("rName").textContent;
+  document.getElementById("cPhone").textContent = document.getElementById("rPhone").textContent;
+  document.getElementById("cCheckin").textContent = document.getElementById("rCheckin").textContent;
+  document.getElementById("cCheckout").textContent = document.getElementById("rCheckout").textContent;
+  document.getElementById("cPeople").textContent = document.getElementById("rPeople").textContent;
+  document.getElementById("cSection").textContent = document.getElementById("rSection").textContent;
+  document.getElementById("cServices").textContent = document.getElementById("rServices").textContent;
+  document.getElementById("cNotes").textContent = document.getElementById("rNotes").textContent;
+}
+
 form.onsubmit = (e) => {
   e.preventDefault();
 
@@ -299,6 +611,9 @@ form.onsubmit = (e) => {
     .filter(i => i.checked)
     .map(i => i.value);
 
+  document.getElementById("invoiceNo").textContent = "INV-" + Date.now().toString().slice(-6);
+  document.getElementById("invoiceDate").textContent = new Date().toLocaleDateString("ar-SA");
+
   document.getElementById("rName").textContent = document.getElementById("name").value;
   document.getElementById("rPhone").textContent = phone.value;
   document.getElementById("rCheckin").textContent = formatDateTime(checkin.value);
@@ -308,6 +623,9 @@ form.onsubmit = (e) => {
   document.getElementById("rServices").textContent = selectedServices.length ? selectedServices.join("، ") : "لا توجد خدمات إضافية";
   document.getElementById("rNotes").textContent = notes.value || "لا توجد ملاحظات";
 
+  fillCaptureInvoice();
+
+  serviceList.classList.remove("show");
   reviewBox.style.display = "block";
   successMsg.style.display = "none";
   sendingText.style.display = "none";
@@ -327,50 +645,58 @@ confirmBtn.onclick = async () => {
     reviewActions.style.display = "none";
     sendingText.style.display = "block";
 
-    await new Promise(resolve => setTimeout(resolve, 200));
+    fillCaptureInvoice();
 
-    sendingText.style.display = "none";
+    await new Promise(resolve => setTimeout(resolve, 500));
 
-    const canvas = await html2canvas(reviewBox, {
-      scale: 3,
+    const canvas = await html2canvas(captureInvoice, {
+      scale: 2,
       backgroundColor: "#ffffff",
       useCORS: true,
-      windowWidth: document.documentElement.scrollWidth
+      allowTaint: true,
+      scrollX: 0,
+      scrollY: 0,
+      windowWidth: 900,
+      windowHeight: 900
     });
 
-    sendingText.style.display = "block";
+    let blob = null;
 
-    canvas.toBlob(async (blob) => {
-      const formData = new FormData();
-      formData.append("photo", blob, "booking-review.png");
-
-      const response = await fetch(WORKER_URL, {
-        method: "POST",
-        body: formData
+    if(canvas.toBlob){
+      blob = await new Promise(resolve => {
+        canvas.toBlob(resolve, "image/png", 1);
       });
+    }
 
-      if(!response.ok){
-        throw new Error("send failed");
-      }
+    if(!blob){
+      const dataURL = canvas.toDataURL("image/png", 1);
+      blob = dataURLToBlob(dataURL);
+    }
 
-      reviewBox.style.display = "none";
-      successMsg.style.display = "block";
-      successMsg.scrollIntoView({behavior:"smooth", block:"center"});
+    const formData = new FormData();
+    formData.append("photo", blob, "booking-invoice-square.png");
 
-      confirmBtn.disabled = false;
-      editBtn.disabled = false;
-      reviewActions.style.display = "grid";
-      sendingText.style.display = "none";
+    const response = await fetch(WORKER_URL, {
+      method: "POST",
+      body: formData
+    });
 
-    }, "image/png");
+    if(!response.ok){
+      throw new Error("send failed");
+    }
+
+    reviewBox.style.display = "none";
+    successMsg.style.display = "block";
+    successMsg.scrollIntoView({behavior:"smooth", block:"center"});
 
   }catch(error){
     alert("تعذر إرسال الطلب، تأكد من رابط العامل وحاول مرة أخرى");
-    confirmBtn.disabled = false;
-    editBtn.disabled = false;
-    reviewActions.style.display = "grid";
-    sendingText.style.display = "none";
   }
+
+  confirmBtn.disabled = false;
+  editBtn.disabled = false;
+  reviewActions.style.display = "grid";
+  sendingText.style.display = "none";
 };
 </script>
 
